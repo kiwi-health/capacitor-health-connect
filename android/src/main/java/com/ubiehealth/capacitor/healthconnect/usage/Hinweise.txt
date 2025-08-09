@@ -1,0 +1,14 @@
+
+Wichtige Hinweise
+
+getAllHealthConnectRecordsFromPlugin() steht hier als Platzhalter für den Abruf deiner Daten aus dem HealthConnectPlugin.kt über die Capacitor-Bridge.
+
+records muss exakt dem Format aus healthconnect-to-apple-health.v4.3 entsprechen (alle Werte, Units, sourceName etc.).
+
+Die Funktion exportiert immer alle Records (kein Delta-Export).
+
+XML entspricht der Apple HealthKit-Spezifikation mit:
+
+<Record>: type, sourceName, startDate, endDate, value, unit
+
+<Workout> inkl. duration, durationUnit, MetadataEntry, WorkoutStatistics

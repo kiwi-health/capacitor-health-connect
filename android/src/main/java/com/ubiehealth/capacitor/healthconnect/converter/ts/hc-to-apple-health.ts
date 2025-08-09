@@ -1,70 +1,40 @@
-/**
- * Health Connect JSON -> Apple Health XML converter – v3.4 (TypeScript)
- * CHANGE: Every <Record> has ONLY: type, sourceName, startDate, endDate, value, unit.
- * Category values use Apple HKCategoryValue* strings (e.g., SleepAnalysisInBed).
- */
+// hc-to-apple-health.ts
+type HCEnergy = { unit: string; value: number };
+type HCMass = { unit: string; value: number };
+type HCQuantity = { unit: string; value: number };
+type HCRecord = any;
 
-type ISO = string;
+export interface ConvertInput { records: HCRecord[]; sourceName?: string; }
 
-// ---------- Apple Health Identifiers ----------
 const APPLE_TYPES = {
-  Steps: "HKQuantityTypeIdentifierStepCount",
-  HeartRate: "HKQuantityTypeIdentifierHeartRate",
-  RestingHeartRate: "HKQuantityTypeIdentifierRestingHeartRate",
-  ActiveCaloriesBurned: "HKQuantityTypeIdentifierActiveEnergyBurned",
-  BasalEnergyBurned: "HKQuantityTypeIdentifierBasalEnergyBurned",
   BodyMass: "HKQuantityTypeIdentifierBodyMass",
   Height: "HKQuantityTypeIdentifierHeight",
-  OxygenSaturation: "HKQuantityTypeIdentifierOxygenSaturation",
+  BodyFatPercentage: "HKQuantityTypeIdentifierBodyFatPercentage",
   BodyTemperature: "HKQuantityTypeIdentifierBodyTemperature",
-  BasalBodyTemperature: "HKQuantityTypeIdentifierBasalBodyTemperature",
+  HeartRate: "HKQuantityTypeIdentifierHeartRate",
+  RestingHeartRate: "HKQuantityTypeIdentifierRestingHeartRate",
   RespiratoryRate: "HKQuantityTypeIdentifierRespiratoryRate",
-  VO2Max: "HKQuantityTypeIdentifierVO2Max",
-  BloodPressureSystolic: "HKQuantityTypeIdentifierBloodPressureSystolic",
-  BloodPressureDiastolic: "HKQuantityTypeIdentifierBloodPressureDiastolic",
+  OxygenSaturation: "HKQuantityTypeIdentifierOxygenSaturation",
   BloodGlucose: "HKQuantityTypeIdentifierBloodGlucose",
+  VO2Max: "HKQuantityTypeIdentifierVO2Max",
+  StepCount: "HKQuantityTypeIdentifierStepCount",
   DistanceWalkingRunning: "HKQuantityTypeIdentifierDistanceWalkingRunning",
+  FlightsClimbed: "HKQuantityTypeIdentifierFlightsClimbed",
+  BasalEnergyBurned: "HKQuantityTypeIdentifierBasalEnergyBurned",
+  ActiveEnergyBurned: "HKQuantityTypeIdentifierActiveEnergyBurned",
+  DietaryEnergyConsumed: "HKQuantityTypeIdentifierDietaryEnergyConsumed",
   DietaryWater: "HKQuantityTypeIdentifierDietaryWater",
-  SleepAnalysis: "HKCategoryTypeIdentifierSleepAnalysis",
-  SexualActivity: "HKCategoryTypeIdentifierSexualActivity",
-  MenstrualFlow: "HKCategoryTypeIdentifierMenstrualFlow",
-  OvulationTestResult: "HKCategoryTypeIdentifierOvulationTestResult",
-  AppleSleepingWristTemperature: "HKQuantityTypeIdentifierAppleSleepingWristTemperature",
-  PushCount: "HKQuantityTypeIdentifierPushCount",
-
-  // Cadence & Speed
-  CyclingCadence: "HKQuantityTypeIdentifierCyclingCadence",
-  WalkingSpeed: "HKQuantityTypeIdentifierWalkingSpeed",
-  RunningSpeed: "HKQuantityTypeIdentifierRunningSpeed",
-  CyclingSpeed: "HKQuantityTypeIdentifierCyclingSpeed",
-  RunningCadence: "HKQuantityTypeIdentifierRunningCadence",
-
-  // Nutrition
-  DietaryEnergy: "HKQuantityTypeIdentifierDietaryEnergyConsumed",
+  DietaryProtein: "HKQuantityTypeIdentifierDietaryProtein",
   DietaryFatTotal: "HKQuantityTypeIdentifierDietaryFatTotal",
   DietaryFatSaturated: "HKQuantityTypeIdentifierDietaryFatSaturated",
-  DietaryFatPolyunsaturated: "HKQuantityTypeIdentifierDietaryFatPolyunsaturated",
   DietaryFatMonounsaturated: "HKQuantityTypeIdentifierDietaryFatMonounsaturated",
-  DietaryCarbohydrates: "HKQuantityTypeIdentifierDietaryCarbohydrates",
-  DietarySugar: "HKQuantityTypeIdentifierDietarySugar",
-  DietaryFiber: "HKQuantityTypeIdentifierDietaryFiber",
-  DietaryProtein: "HKQuantityTypeIdentifierDietaryProtein",
+  DietaryFatPolyunsaturated: "HKQuantityTypeIdentifierDietaryFatPolyunsaturated",
+  DietaryCholesterol: "HKQuantityTypeIdentifierDietaryCholesterol",
   DietarySodium: "HKQuantityTypeIdentifierDietarySodium",
   DietaryPotassium: "HKQuantityTypeIdentifierDietaryPotassium",
-  DietaryCholesterol: "HKQuantityTypeIdentifierDietaryCholesterol",
-  DietaryCalcium: "HKQuantityTypeIdentifierDietaryCalcium",
-  DietaryIron: "HKQuantityTypeIdentifierDietaryIron",
-  DietaryMagnesium: "HKQuantityTypeIdentifierDietaryMagnesium",
-  DietaryZinc: "HKQuantityTypeIdentifierDietaryZinc",
-  DietarySelenium: "HKQuantityTypeIdentifierDietarySelenium",
-  DietaryCopper: "HKQuantityTypeIdentifierDietaryCopper",
-  DietaryManganese: "HKQuantityTypeIdentifierDietaryManganese",
-  DietaryPhosphorus: "HKQuantityTypeIdentifierDietaryPhosphorus",
-  DietaryIodine: "HKQuantityTypeIdentifierDietaryIodine",
-  DietaryMolybdenum: "HKQuantityTypeIdentifierDietaryMolybdenum",
-  DietaryChromium: "HKQuantityTypeIdentifierDietaryChromium",
-  DietaryChloride: "HKQuantityTypeIdentifierDietaryChloride",
-  DietaryCaffeine: "HKQuantityTypeIdentifierDietaryCaffeine",
+  DietaryCarbohydrates: "HKQuantityTypeIdentifierDietaryCarbohydrates",
+  DietaryFiber: "HKQuantityTypeIdentifierDietaryFiber",
+  DietarySugar: "HKQuantityTypeIdentifierDietarySugar",
   DietaryVitaminA: "HKQuantityTypeIdentifierDietaryVitaminA",
   DietaryVitaminC: "HKQuantityTypeIdentifierDietaryVitaminC",
   DietaryVitaminD: "HKQuantityTypeIdentifierDietaryVitaminD",
@@ -78,410 +48,223 @@ const APPLE_TYPES = {
   DietaryFolate: "HKQuantityTypeIdentifierDietaryFolate",
   DietaryBiotin: "HKQuantityTypeIdentifierDietaryBiotin",
   DietaryPantothenicAcid: "HKQuantityTypeIdentifierDietaryPantothenicAcid",
+  DietaryCalcium: "HKQuantityTypeIdentifierDietaryCalcium",
+  DietaryIron: "HKQuantityTypeIdentifierDietaryIron",
+  DietaryMagnesium: "HKQuantityTypeIdentifierDietaryMagnesium",
+  DietaryPhosphorus: "HKQuantityTypeIdentifierDietaryPhosphorus",
+  DietaryZinc: "HKQuantityTypeIdentifierDietaryZinc",
+  DietaryCopper: "HKQuantityTypeIdentifierDietaryCopper",
+  DietaryManganese: "HKQuantityTypeIdentifierDietaryManganese",
+  DietarySelenium: "HKQuantityTypeIdentifierDietarySelenium",
+  DietaryIodine: "HKQuantityTypeIdentifierDietaryIodine",
+  RunningCadence: "HKQuantityTypeIdentifierRunningCadence",
+  CyclingCadence: "HKQuantityTypeIdentifierCyclingCadence",
+  WalkingSpeed: "HKQuantityTypeIdentifierWalkingSpeed",
+  RunningSpeed: "HKQuantityTypeIdentifierRunningSpeed",
+  CyclingSpeed: "HKQuantityTypeIdentifierCyclingSpeed",
+  SleepAnalysis: "HKCategoryTypeIdentifierSleepAnalysis",
+  MenstrualFlow: "HKCategoryTypeIdentifierMenstrualFlow",
+  IntermenstrualBleeding: "HKCategoryTypeIdentifierIntermenstrualBleeding",
+  CervicalMucusQuality: "HKCategoryTypeIdentifierCervicalMucusQuality",
+  OvulationTestResult: "HKCategoryTypeIdentifierOvulationTestResult",
+  SexualActivity: "HKCategoryTypeIdentifierSexualActivity"
 } as const;
 
-// ---------- Date / helpers ----------
-function pad(n: number) { return n < 10 ? "0"+n : ""+n; }
-function formatAppleDate(iso: string): string {
-  const d = new Date(iso);
-  const offMin = -(d.getTimezoneOffset());
-  const sign = offMin >= 0 ? "+" : "-";
-  const abs = Math.abs(offMin);
-  const hh = pad(Math.floor(abs / 60));
-  const mm = pad(abs % 60);
-  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())} ${sign}${hh}:${mm}`;
+const SUPPORTED_INPUT_TYPES = new Set<string>([
+  "ActiveCaloriesBurned","BasalBodyTemperature","BasalMetabolicRate","BloodGlucose","BloodPressure",
+  "BodyFat","BodyTemperature","BodyWaterMass","BoneMass","CervicalMucus","Distance","ElevationGained",
+  "ExerciseSession","FloorsClimbed","HeartRateSeries","Height","Hydration","IntermenstrualBleeding",
+  "LeanBodyMass","Menstruation","MenstruationFlow","Nutrition","OvulationTest","OxygenSaturation",
+  "PlannedExercise","Power","RespiratoryRate","RestingHeartRate","SexualActivity","SleepSession",
+  "SleepStage","SkinTemperature","Speed","Steps","StepsCadence","TotalCaloriesBurned","Vo2Max","Weight",
+  "WheelchairPushes","CyclingPedalingCadence"
+]);
+
+function isoToApple(i?: string){ if(!i) return undefined; const d=new Date(i);
+  const pad=(n:number)=>String(n).padStart(2,"0"); const off=-d.getTimezoneOffset(); const sign=off>=0?"+":"-";
+  const hh=pad(Math.floor(Math.abs(off)/60)); const mm=pad(Math.abs(off)%60);
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())} ${sign}${hh}${mm}`;
+}
+const esc=(s:any)=>String(s??"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+function getSourceName(rec:any, fallback:string){
+  const meta = (rec && rec.metadata) || {};
+  const pkg = meta.dataOrigin || meta.packageName || meta.appPackageName || meta.sourcePackage;
+  return (pkg && String(pkg).trim().length>0) ? String(pkg) : fallback;
 }
 
-const esc = (s: any) => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+function energyToKCal(e?: HCEnergy){ if(!e) return undefined; const u=e.unit?.toLowerCase?.()||""; if(u.includes("kilocal")) return e.value; if(u.includes("cal")) return e.value/1000; if(u.includes("joule")) return e.value/4184; return e.value; }
+function tempToC(t?: HCQuantity){ if(!t) return undefined; const u=t.unit?.toLowerCase?.()||""; return u.includes("f")?(t.value-32)/1.8:t.value; }
+function massToKg(m?: HCMass){ if(!m) return undefined; const u=m.unit?.toLowerCase?.()||""; if(u.startsWith("kilo")) return m.value; if(u.startsWith("gram")) return m.value/1000; if(u.startsWith("pound")) return m.value*0.45359237; return m.value; }
+function massToG(m?: HCMass){ if(!m) return undefined; const u=m.unit?.toLowerCase?.()||""; if(u.startsWith("kilo")) return m.value*1000; if(u.startsWith("gram")) return m.value; if(u.startsWith("pound")) return m.value*453.59237; return m.value; }
+function massToMg(m?: HCMass){ const g=massToG(m); return g===undefined?undefined:g*1000; }
+function massToMicrog(m?: HCMass){ const g=massToG(m); return g===undefined?undefined:g*1e6; }
+function lengthToMeters(l?: HCQuantity){ if(!l) return undefined; const u=l.unit?.toLowerCase?.()||""; if(u.includes("kilo")) return l.value*1000; if(u.includes("mile")) return l.value*1609.344; if(u.includes("feet")||u.includes("foot")) return l.value*0.3048; if(u.includes("inch")) return l.value*0.0254; return l.value; }
+function volumeToMl(v?: HCQuantity){ if(!v) return undefined; const u=v.unit?.toLowerCase?.()||""; return (u==="l"||u.includes("liter"))?v.value*1000:v.value; }
+function speedToMS(s?: HCQuantity){ if(!s) return undefined; const u=s.unit?.toLowerCase?.()||""; if(u.includes("km/h")) return s.value/3.6; if(u.includes("mph")) return s.value*0.44704; return s.value; }
 
-function emitRecord(attrs: {type: string; sourceName: string; startDate: string; endDate: string; value?: string|number; unit?: string}) {
-  const allowed = ["type","sourceName","startDate","endDate","value","unit"] as const;
-  const body = allowed.map(k => (attrs as any)[k] !== undefined ? `${k}="${esc((attrs as any)[k])}"` : null).filter(Boolean).join(" ");
-  return `<Record ${body}></Record>`;
+const emitRecord = (a:{type:string,sourceName:string,startDate:string,endDate:string,value:any,unit:string}) =>
+  `<Record type="${esc(a.type)}" sourceName="${esc(a.sourceName)}" startDate="${esc(a.startDate)}" endDate="${esc(a.endDate)}" value="${esc(a.value)}" unit="${esc(a.unit)}"/>`;
+
+function emitWorkout(w:{ workoutActivityType:string; duration:number; durationUnit:string; sourceName:string; creationDate?:string; startDate:string; endDate:string; metadata?:{key:string;value:any}[]; stats?:{type:string;startDate:string;endDate:string;sum:any;unit:string}[] }){
+  const m = (w.metadata||[]).map(x=>`  <MetadataEntry key="${esc(x.key)}" value="${esc(x.value)}"/>`).join("\n");
+  const s = (w.stats||[]).map(x=>`  <WorkoutStatistics type="${esc(x.type)}" startDate="${esc(x.startDate)}" endDate="${esc(x.endDate)}" sum="${esc(x.sum)}" unit="${esc(x.unit)}"/>`).join("\n");
+  return `<Workout workoutActivityType="${esc(w.workoutActivityType)}" duration="${esc(w.duration)}" durationUnit="${esc(w.durationUnit)}" sourceName="${esc(w.sourceName)}"${w.creationDate?` creationDate="${esc(w.creationDate)}"`:""} startDate="${esc(w.startDate)}" endDate="${esc(w.endDate)}">
+${m}${m&&s?"\n":""}${s}
+</Workout>`;
 }
 
-function baseAttrs(rec: any, startISO: string, endISO?: string) {
-  return {
-    type: "",
-    sourceName: rec?.metadata?.dataOrigin || "Health Connect",
-    startDate: formatAppleDate(startISO),
-    endDate: formatAppleDate(endISO ?? startISO),
-    value: undefined as string | number | undefined,
-    unit: undefined as string | undefined,
-  };
-}
-
-// ---------- Unit converters ----------
-type Mass = { unit: string; value: number };
-type Length = { unit: string; value: number };
-type Energy = { unit: string; value: number };
-type Temperature = { unit: string; value: number };
-type Pressure = { unit: string; value: number };
-type Volume = { unit: string; value: number };
-type NutritionField = { unit: string; value: number };
-
-const inGrams = (m: Mass) => {
-  const u = m.unit?.toLowerCase();
-  if (u === "gram" || u === "g") return m.value;
-  if (u === "kilogram" || u === "kg") return m.value * 1000;
-  if (u === "pound" || u === "lb" || u === "lbs") return m.value * 453.59237;
-  throw new Error("Unsupported mass: " + m.unit);
-};
-const lengthToMeters = (l: Length) => {
-  const u = l.unit?.toLowerCase();
-  if (u === "meter" || u === "m") return l.value;
-  if (u === "kilometer" || u === "km") return l.value * 1000;
-  if (u === "mile" || u === "mi") return l.value * 1609.344;
-  if (u === "inch" || u === "in") return l.value * 0.0254;
-  if (u === "feet" || u === "foot" || u === "ft") return l.value * 0.3048;
-  throw new Error("Unsupported length: " + l.unit);
-};
-const energyToKCal = (e: Energy) => {
-  const u = e.unit?.toLowerCase();
-  if (u === "kilocalories" || u === "kcal" || u === "calories") return e.value;
-  if (u === "joules" || u === "j") return e.value / 4184;
-  if (u === "kilojoules" || u === "kj") return e.value / 4.184;
-  throw new Error("Unsupported energy: " + e.unit);
-};
-const pressureToMmHg = (p: Pressure) => {
-  const u = p.unit?.toLowerCase();
-  if (u?.includes("millimetersofmercury") || u === "mmhg") return p.value;
-  throw new Error("Unsupported pressure: " + p.unit);
-};
-const tempToC = (t: Temperature) => {
-  const u = t.unit?.toLowerCase();
-  if (u === "celsius" || u === "°c" || u === "c") return t.value;
-  if (u === "fahrenheit" || u === "°f" || u === "f") return (t.value - 32) * 5/9;
-  throw new Error("Unsupported temperature: " + t.unit);
-};
-const glucoseToMgdl = (g: {unit: string; value: number}) => {
-  const u = g.unit?.toLowerCase();
-  if (u === "milligramsperdeciliter" || u === "mg/dl" || u === "mgdl") return g.value;
-  if (u === "millimolesperliter" || u === "mmol/l" || u === "mmoll") return g.value * 18.0182;
-  throw new Error("Unsupported glucose unit: " + g.unit);
-};
-const volumeToML = (v: Volume) => {
-  const u = v.unit?.toLowerCase();
-  if (u === "milliliters" || u === "milliliter" || u === "ml") return v.value;
-  if (u === "liters" || u === "liter" || u === "l") return v.value * 1000;
-  if (u === "fluidouncesus" || u === "fl_oz_us") return v.value * 29.5735;
-  throw new Error("Unsupported volume: " + v.unit);
-};
-
-const normalizeUnit = (u: string) => (u || "").toLowerCase().replace("µ","u");
-const gramsVal = (x: NutritionField) => {
-  const u = normalizeUnit(x.unit);
-  if (u === "g" || u === "gram") return x.value;
-  if (u === "mg" || u === "milligram") return x.value / 1000;
-  if (u === "mcg" || u === "ug" || u === "microgram") return x.value / 1_000_000;
-  return x.value;
-};
-const mgVal = (x: NutritionField) => {
-  const u = normalizeUnit(x.unit);
-  if (u === "mg" || u === "milligram") return x.value;
-  if (u === "g" || u === "gram") return x.value * 1000;
-  if (u === "mcg" || u === "ug" || u === "microgram") return x.value / 1000;
-  return x.value;
-};
-const mcgVal = (x: NutritionField) => {
-  const u = normalizeUnit(x.unit);
-  if (u === "mcg" || u === "ug" || u === "microgram") return x.value;
-  if (u === "mg" || u === "milligram") return x.value * 1000;
-  if (u === "g" || u === "gram") return x.value * 1_000_000;
-  return x.value;
-};
-
-function resolveSpeedIdentifier(rec: any): string | undefined {
-  const act = String(rec.activityType || rec.activity || rec.metadata?.activityType || "").toLowerCase();
-  if (act.includes("cycl")) return APPLE_TYPES.CyclingSpeed;
-  if (act.includes("run")) return APPLE_TYPES.RunningSpeed;
-  if (act.includes("walk")) return APPLE_TYPES.WalkingSpeed;
-  return undefined;
-}
-
-// ---------- Category value helpers ----------
-function sleepValueString(kind: "Asleep"|"InBed"|"Awake"): string {
-  const map: Record<string,string> = {
-    Asleep: "HKCategoryValueSleepAnalysisAsleep",
-    InBed: "HKCategoryValueSleepAnalysisInBed",
-    Awake: "HKCategoryValueSleepAnalysisAwake",
-  };
-  return map[kind] || "HKCategoryValueSleepAnalysisAsleep";
-}
-function menstrualFlowValueString(flow: string): string {
-  const v = String(flow || "").toLowerCase();
-  const map: Record<string,string> = {
-    light: "HKCategoryValueMenstrualFlowLight",
-    medium: "HKCategoryValueMenstrualFlowMedium",
-    heavy: "HKCategoryValueMenstrualFlowHeavy",
-    none: "HKCategoryValueMenstrualFlowNone",
-  };
-  return map[v] || "HKCategoryValueMenstrualFlowMedium";
-}
-function ovulationTestValueString(result: string): string {
-  const v = String(result || "").toLowerCase();
-  const map: Record<string,string> = {
-    positive: "HKCategoryValueOvulationTestResultPositive",
-    negative: "HKCategoryValueOvulationTestResultNegative",
-    indeterminate: "HKCategoryValueOvulationTestResultIndeterminate",
-  };
-  return map[v] || "HKCategoryValueOvulationTestResultIndeterminate";
-}
-
-// ---------- Nutrition ----------
-function mapNutrition(rec: any): string[] {
-  const out: string[] = [];
-  const a = baseAttrs(rec, rec.startTime, rec.endTime);
-
-  if (rec.energy) out.push(emitRecord({ ...a, type: APPLE_TYPES.DietaryEnergy, unit: "kcal", value: energyToKCal(rec.energy) }));
-  const gramQ = (t: string, f?: NutritionField) => { if (f) out.push(emitRecord({ ...a, type: t, unit: "g", value: gramsVal(f) })); };
-  const mgQ = (t: string, f?: NutritionField) => { if (f) out.push(emitRecord({ ...a, type: t, unit: "mg", value: mgVal(f) })); };
-  const mcgQ = (t: string, f?: NutritionField) => { if (f) out.push(emitRecord({ ...a, type: t, unit: "mcg", value: mcgVal(f) })); };
-
-  // Macros
-  gramQ(APPLE_TYPES.DietaryFatTotal, rec.fatTotal);
-  gramQ(APPLE_TYPES.DietaryFatSaturated, rec.fatSaturated);
-  gramQ(APPLE_TYPES.DietaryFatPolyunsaturated, rec.fatPolyunsaturated);
-  gramQ(APPLE_TYPES.DietaryFatMonounsaturated, rec.fatMonounsaturated);
-  gramQ(APPLE_TYPES.DietaryCarbohydrates, rec.carbs);
-  gramQ(APPLE_TYPES.DietarySugar, rec.sugar);
-  gramQ(APPLE_TYPES.DietaryFiber, rec.fiber);
-  gramQ(APPLE_TYPES.DietaryProtein, rec.protein);
-  mgQ(APPLE_TYPES.DietarySodium, rec.sodium);
-  mgQ(APPLE_TYPES.DietaryPotassium, rec.potassium);
-  mgQ(APPLE_TYPES.DietaryCholesterol, rec.cholesterol);
-
-  // Minerals
-  mgQ(APPLE_TYPES.DietaryCalcium, rec.calcium);
-  mgQ(APPLE_TYPES.DietaryIron, rec.iron);
-  mgQ(APPLE_TYPES.DietaryMagnesium, rec.magnesium);
-  mgQ(APPLE_TYPES.DietaryZinc, rec.zinc);
-  mcgQ(APPLE_TYPES.DietarySelenium, rec.selenium);
-  mgQ(APPLE_TYPES.DietaryCopper, rec.copper);
-  mgQ(APPLE_TYPES.DietaryManganese, rec.manganese);
-  mgQ(APPLE_TYPES.DietaryPhosphorus, rec.phosphorus);
-  mcgQ(APPLE_TYPES.DietaryIodine, rec.iodine);
-  mcgQ(APPLE_TYPES.DietaryMolybdenum, rec.molybdenum);
-  mcgQ(APPLE_TYPES.DietaryChromium, rec.chromium);
-  mgQ(APPLE_TYPES.DietaryChloride, rec.chloride);
-  mgQ(APPLE_TYPES.DietaryCaffeine, rec.caffeine);
-
-  // Vitamins
-  mcgQ(APPLE_TYPES.DietaryVitaminA, rec.vitaminA);
-  mgQ(APPLE_TYPES.DietaryVitaminC, rec.vitaminC);
-  mcgQ(APPLE_TYPES.DietaryVitaminD, rec.vitaminD);
-  mgQ(APPLE_TYPES.DietaryVitaminE, rec.vitaminE);
-  mcgQ(APPLE_TYPES.DietaryVitaminK, rec.vitaminK);
-  mgQ(APPLE_TYPES.DietaryThiamin, rec.thiamin);
-  mgQ(APPLE_TYPES.DietaryRiboflavin, rec.riboflavin);
-  mgQ(APPLE_TYPES.DietaryNiacin, rec.niacin);
-  mgQ(APPLE_TYPES.DietaryVitaminB6, rec.vitaminB6);
-  mcgQ(APPLE_TYPES.DietaryVitaminB12, rec.vitaminB12);
-  mcgQ(APPLE_TYPES.DietaryFolate, rec.folate);
-  mcgQ(APPLE_TYPES.DietaryBiotin, rec.biotin);
-  mgQ(APPLE_TYPES.DietaryPantothenicAcid, rec.pantothenicAcid);
-
-  return out;
-}
-
-// ---------- Public API ----------
-export interface ConvertOptions {
-  locale?: string;
-  exportDate?: Date;
-  application?: { name: string; version: string };
-  sleepCategory?: "Asleep" | "InBed" | "Awake"; // default: Asleep
-  unsupportedPolicy?: "skip" | "strict";
-}
-
-export function convertHealthConnectJsonToAppleXml(input: { records: any[] }, opts: ConvertOptions = {}): string {
-  const locale = opts.locale || "de_DE";
-  const exportDate = opts.exportDate || new Date();
-  const sleepCat = opts.sleepCategory || "Asleep";
-  const unsupportedPolicy = opts.unsupportedPolicy || "skip";
-
-  const header = `<?xml version="1.0" encoding="UTF-8"?>`
-    + `\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">`;
-  const open = `<HealthData locale="${locale}" exportDate="${formatAppleDate(exportDate.toISOString())}" sourceName="${(opts.application?.name || "KIWI HEALTH Export").replace(/"/g,'&quot;')}" sourceVersion="${(opts.application?.version || "1.0").replace(/"/g,'&quot;')}">`;
-
+export function convertHealthConnectJsonToAppleXML(input: ConvertInput): string {
+  const defaultSource = input.sourceName || "HealthConnect";
   const parts: string[] = [];
-  parts.push(header);
-  parts.push(open);
 
-  for (const rec of input.records || []) {
-    const start = rec.startTime ?? rec.time;
-    const end = rec.endTime ?? rec.time;
-    const a = baseAttrs(rec, start, end);
+  const all = Array.isArray(input.records)? input.records : [];
+  const byType:any = all.reduce((m:any,r:any)=>{ (m[r?.type]||(m[r.type]=[])).push(r); return m; }, {});
 
-    try {
-      switch (String(rec.type)) {
-        case "Steps":
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.Steps, unit: "count", value: rec.count }));
-          break;
-        case "HeartRate":
-          for (const s of (rec.samples || [])) {
-            const aa = baseAttrs(rec, s.time, s.time);
-            parts.push(emitRecord({ ...aa, type: APPLE_TYPES.HeartRate, unit: "count/min", value: s.beatsPerMinute }));
-          }
-          break;
-        case "RestingHeartRate":
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.RestingHeartRate, unit: "count/min", value: rec.beatsPerMinute }));
-          break;
-        case "ActiveCaloriesBurned":
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.ActiveCaloriesBurned, unit: "kcal", value: energyToKCal(rec.energy) }));
-          break;
-        case "TotalCaloriesBurned":
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.BasalEnergyBurned, unit: "kcal", value: energyToKCal(rec.energy) }));
-          break;
-        case "Weight":
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.BodyMass, unit: "kg", value: inGrams(rec.weight)/1000 }));
-          break;
-        case "Height":
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.Height, unit: "cm", value: lengthToMeters(rec.height)*100 }));
-          break;
-        case "OxygenSaturation":
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.OxygenSaturation, unit: "%", value: rec.percentage?.value }));
-          break;
-        case "BodyTemperature":
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.BodyTemperature, unit: "degC", value: tempToC(rec.temperature) }));
-          break;
-        case "BasalBodyTemperature":
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.BasalBodyTemperature, unit: "degC", value: tempToC(rec.temperature) }));
-          break;
-        case "RespiratoryRate":
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.RespiratoryRate, unit: "count/min", value: rec.rate }));
-          break;
-        case "Vo2Max":
-        case "VO2Max":
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.VO2Max, unit: "mL/min·kg", value: rec.vo2MillilitersPerMinuteKilogram }));
-          break;
-        case "BloodPressure":
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.BloodPressureSystolic, unit: "mmHg", value: pressureToMmHg(rec.systolic) }));
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.BloodPressureDiastolic, unit: "mmHg", value: pressureToMmHg(rec.diastolic) }));
-          break;
-        case "BloodGlucose":
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.BloodGlucose, unit: "mg/dL", value: glucoseToMgdl(rec.level) }));
-          break;
-        case "Distance":
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.DistanceWalkingRunning, unit: "m", value: lengthToMeters(rec.distance) }));
-          break;
-        case "Hydration":
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.DietaryWater, unit: "mL", value: volumeToML(rec.volume) }));
-          break;
-        case "SleepSession": {
-          const v = sleepValueString(sleepCat);
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.SleepAnalysis, value: v }));
-          break;
-        }
-        case "SexualActivity":
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.SexualActivity, value: 1 }));
-          break;
-        case "Menstruation":
-        case "MenstruationPeriod":
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.MenstrualFlow, value: menstrualFlowValueString("medium") }));
-          break;
-        case "MenstruationFlow": {
-          const aa = baseAttrs(rec, rec.time, rec.time);
-          parts.push(emitRecord({ ...aa, type: APPLE_TYPES.MenstrualFlow, value: menstrualFlowValueString(rec.flow) }));
-          break;
-        }
-        case "OvulationTest": {
-          const aa = baseAttrs(rec, rec.time, rec.time);
-          parts.push(emitRecord({ ...aa, type: APPLE_TYPES.OvulationTestResult, value: ovulationTestValueString(rec.result) }));
-          break;
-        }
-        case "SkinTemperature":
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.AppleSleepingWristTemperature, unit: "degC", value: (typeof rec.temperatureDeltaCelsius === 'number' ? rec.temperatureDeltaCelsius : 0) }));
-          break;
-        case "WheelchairPushes":
-          parts.push(emitRecord({ ...a, type: APPLE_TYPES.PushCount, unit: "count", value: rec.count }));
-          break;
+  for (const rec of all) {
+    if(!rec || !SUPPORTED_INPUT_TYPES.has(rec.type)) continue;
+    const start = isoToApple(rec.startTime || rec.time);
+    const end = isoToApple(rec.endTime || rec.time);
+    if(!start || !end) continue;
+    const base = { sourceName: getSourceName(rec, defaultSource), startDate: start, endDate: end };
 
-        // ---- Cadence & Speed ----
-        case "CyclingPedalingCadence": {
-          if (Array.isArray(rec.samples) && rec.samples.length) {
-            for (const s of rec.samples) {
-              const aa = baseAttrs(rec, s.time, s.time);
-              const rpm = (s.revolutionsPerMinute ?? s.rpm ?? s.rate);
-              if (typeof rpm === "number") parts.push(emitRecord({ ...aa, type: APPLE_TYPES.CyclingCadence, unit: "count/min", value: rpm }));
-            }
-          } else {
-            const rpm = (rec.revolutionsPerMinute ?? rec.rpm ?? rec.rate);
-            if (typeof rpm === "number") parts.push(emitRecord({ ...a, type: APPLE_TYPES.CyclingCadence, unit: "count/min", value: rpm }));
-            else if (unsupportedPolicy === "strict") throw new Error("CyclingPedalingCadence without numeric value");
-          }
-          break;
-        }
-        case "Speed": {
-          const id = resolveSpeedIdentifier(rec);
-          if (!id) { if (unsupportedPolicy === "strict") throw new Error("Speed requires activityType (walking/running/cycling)"); break; }
-          const emit = (timeISO: string, v: number) => {
-            const aa = baseAttrs(rec, timeISO, timeISO);
-            parts.push(emitRecord({ ...aa, type: id, unit: "m/s", value: v }));
-          };
-          if (Array.isArray(rec.samples) && rec.samples.length) {
-            for (const s of rec.samples) {
-              const v = (s.metersPerSecond ?? s.mps ?? s.speed);
-              if (typeof v === "number" && s.time) emit(s.time, v);
-            }
-          } else {
-            const v = (rec.metersPerSecond ?? rec.mps ?? rec.speed);
-            if (typeof v === "number") emit(start, v);
-            else if (unsupportedPolicy === "strict") throw new Error("Speed missing numeric value");
-          }
-          break;
-        }
-        case "CyclingSpeed": {
-          const emit = (timeISO: string, v: number) => {
-            const aa = baseAttrs(rec, timeISO, timeISO);
-            parts.push(emitRecord({ ...aa, type: APPLE_TYPES.CyclingSpeed, unit: "m/s", value: v }));
-          };
-          if (Array.isArray(rec.samples) && rec.samples.length) {
-            for (const s of rec.samples) {
-              const v = (s.metersPerSecond ?? s.mps ?? s.speed);
-              if (typeof v === "number" && s.time) emit(s.time, v);
-            }
-          } else {
-            const v = (rec.metersPerSecond ?? rec.mps ?? rec.speed);
-            if (typeof v === "number") emit(start, v);
-            else if (unsupportedPolicy === "strict") throw new Error("CyclingSpeed without numeric m/s");
-          }
-          break;
-        }
-        case "StepsCadence": {
-          const act = String(rec.activityType || rec.activity || rec.metadata?.activityType || "").toLowerCase();
-          if (!act.includes("run")) { if (unsupportedPolicy === "strict") throw new Error("StepsCadence not running; no generic type"); break; }
-          const emit = (timeISO: string, spm: number) => {
-            const aa = baseAttrs(rec, timeISO, timeISO);
-            parts.push(emitRecord({ ...aa, type: APPLE_TYPES.RunningCadence, unit: "count/min", value: spm }));
-          };
-          if (Array.isArray(rec.samples) && rec.samples.length) {
-            for (const s of rec.samples) {
-              const spm = (s.stepsPerMinute ?? s.spm ?? s.rate);
-              if (typeof spm === "number" && s.time) emit(s.time, spm);
-            }
-          } else {
-            const spm = (rec.stepsPerMinute ?? rec.spm ?? rec.rate);
-            if (typeof spm === "number") emit(start, spm);
-            else if (unsupportedPolicy === "strict") throw new Error("StepsCadence without numeric steps/min");
-          }
-          break;
-        }
-
-        case "Nutrition":
-          parts.push(...mapNutrition(rec));
-          break;
-
-        default:
-          if (unsupportedPolicy === "strict") throw new Error(`Unsupported type: ${rec.type}`);
+    switch(rec.type){
+      case "Weight": parts.push(emitRecord({ ...base, type: APPLE_TYPES.BodyMass, unit: "kg", value: massToKg(rec.weight) ?? "" })); break;
+      case "Height": parts.push(emitRecord({ ...base, type: APPLE_TYPES.Height, unit: "m", value: lengthToMeters(rec.height) ?? "" })); break;
+      case "BodyFat": parts.push(emitRecord({ ...base, type: APPLE_TYPES.BodyFatPercentage, unit: "%", value: rec.percentage?.value ?? "" })); break;
+      case "BodyTemperature":
+      case "BasalBodyTemperature":
+      case "SkinTemperature":
+        parts.push(emitRecord({ ...base, type: APPLE_TYPES.BodyTemperature, unit: "degC", value: tempToC(rec.temperature) ?? "" })); break;
+      case "RestingHeartRate": parts.push(emitRecord({ ...base, type: APPLE_TYPES.RestingHeartRate, unit: "count/min", value: rec.beatsPerMinute ?? "" })); break;
+      case "HeartRateSeries":
+        if (Array.isArray(rec.samples)) for(const s of rec.samples){ const t=isoToApple(s.time); if(!t) continue; parts.push(emitRecord({ type: APPLE_TYPES.HeartRate, sourceName: getSourceName(rec, defaultSource), startDate: t, endDate: t, value: s.beatsPerMinute ?? "", unit: "count/min" })); }
+        break;
+      case "RespiratoryRate": parts.push(emitRecord({ ...base, type: APPLE_TYPES.RespiratoryRate, unit: "count/min", value: rec.rate ?? "" })); break;
+      case "OxygenSaturation": parts.push(emitRecord({ ...base, type: APPLE_TYPES.OxygenSaturation, unit: "%", value: rec.percentage?.value ?? "" })); break;
+      case "BloodGlucose": parts.push(emitRecord({ ...base, type: APPLE_TYPES.BloodGlucose, unit: "mg/dL", value: rec.level?.unit?.toLowerCase?.().includes("mmol") ? (rec.level.value*18.0182) : (rec.level?.value ?? "") })); break;
+      case "BloodPressure":
+        parts.push(emitRecord({ ...base, type: "HKQuantityTypeIdentifierBloodPressureSystolic", unit: "mmHg", value: rec.systolic?.value ?? "" }));
+        parts.push(emitRecord({ ...base, type: "HKQuantityTypeIdentifierBloodPressureDiastolic", unit: "mmHg", value: rec.diastolic?.value ?? "" }));
+        break;
+      case "Steps": parts.push(emitRecord({ ...base, type: APPLE_TYPES.StepCount, unit: "count", value: rec.count ?? "" })); break;
+      case "WheelchairPushes": parts.push(emitRecord({ ...base, type: "HKQuantityTypeIdentifierWheelchairPushes", unit: "count", value: rec.count ?? "" })); break;
+      case "Distance": parts.push(emitRecord({ ...base, type: APPLE_TYPES.DistanceWalkingRunning, unit: "km", value: ((lengthToMeters(rec.distance)||0)/1000) })); break;
+      case "FloorsClimbed": parts.push(emitRecord({ ...base, type: APPLE_TYPES.FlightsClimbed, unit: "count", value: rec.floors ?? "" })); break;
+      case "ActiveCaloriesBurned": parts.push(emitRecord({ ...base, type: APPLE_TYPES.ActiveEnergyBurned, unit: "kcal", value: energyToKCal(rec.energy) ?? "" })); break;
+      case "BasalMetabolicRate": parts.push(emitRecord({ ...base, type: APPLE_TYPES.BasalEnergyBurned, unit: "kcal", value: rec.basalMetabolicRate ? energyToKCal(rec.basalMetabolicRate) : "" })); break;
+      case "TotalCaloriesBurned": parts.push(emitRecord({ ...base, type: APPLE_TYPES.ActiveEnergyBurned, unit: "kcal", value: energyToKCal(rec.energy) ?? "" })); break;
+      case "CyclingPedalingCadence": {
+        const v = (rec.samples?.[0]?.revolutionsPerMinute ?? rec.rpm ?? rec.value ?? "");
+        parts.push(emitRecord({ ...base, type: APPLE_TYPES.CyclingCadence, unit: "count/min", value: v })); break;
       }
-    } catch (e) {
-      if (unsupportedPolicy === "strict") throw e;
-      // else skip broken/unsupported
+      case "Speed": {
+        const sp = rec.samples?.[0]?.speed || rec.speed;
+        const v = speedToMS(sp);
+        const hint = String(rec.exerciseTypeName || rec.activityTypeName || rec.activityType || rec.title || "").toLowerCase();
+        if (hint.includes("run")) parts.push(emitRecord({ ...base, type: APPLE_TYPES.RunningSpeed, unit: "m/s", value: v ?? "" }));
+        else if (hint.includes("cycl")||hint.includes("bike")) parts.push(emitRecord({ ...base, type: APPLE_TYPES.CyclingSpeed, unit: "m/s", value: v ?? "" }));
+        else if (hint.includes("walk")) parts.push(emitRecord({ ...base, type: APPLE_TYPES.WalkingSpeed, unit: "m/s", value: v ?? "" }));
+        break;
+      }
+      case "StepsCadence": {
+        const name = String(rec.exerciseTypeName || rec.activityTypeName || rec.activityType || rec.title || "").toLowerCase();
+        const v = rec.samples?.[0]?.rate ?? rec.rate ?? rec.value ?? "";
+        if (name.includes("run")) parts.push(emitRecord({ ...base, type: "HKQuantityTypeIdentifierRunningCadence", unit: "count/min", value: v }));
+        break;
+      }
+      case "Vo2Max": parts.push(emitRecord({ ...base, type: APPLE_TYPES.VO2Max, unit: "mL/min·kg", value: (rec.vo2MillilitersPerMinuteKilogram ?? rec.vo2 ?? rec.vo2Max ?? rec.vo2mlPerMinPerKg ?? "") })); break;
+      case "Nutrition":
+        if (rec.energy) parts.push(emitRecord({ ...base, type: APPLE_TYPES.DietaryEnergyConsumed, unit: "kcal", value: energyToKCal(rec.energy) ?? "" }));
+        if (rec.water) parts.push(emitRecord({ ...base, type: APPLE_TYPES.DietaryWater, unit: "mL", value: (rec.water.unit?.toLowerCase?.().includes("l")? rec.water.value*1000 : rec.water.value) ?? "" }));
+        if (rec.protein) parts.push(emitRecord({ ...base, type: APPLE_TYPES.DietaryProtein, unit: "g", value: (rec.protein.unit?.toLowerCase?.().startsWith("kilo")? rec.protein.value*1000 : rec.protein.value) ?? "" }));
+        break;
+      case "SleepSession":
+        parts.push(emitRecord({ ...base, type: APPLE_TYPES.SleepAnalysis, unit: "", value: "HKCategoryValueSleepAnalysisInBed" })); break;
+      case "SleepStage": {
+        const awake="HKCategoryValueSleepAnalysisAwake", core="HKCategoryValueSleepAnalysisAsleepCore", deep="HKCategoryValueSleepAnalysisAsleepDeep", rem="HKCategoryValueSleepAnalysisAsleepREM";
+        const st=Number(rec.stage); let value=core; if(st===0) value=awake; else if(st===2) value=deep; else if(st===3) value=rem;
+        parts.push(emitRecord({ ...base, type: APPLE_TYPES.SleepAnalysis, unit: "", value })); break;
+      }
+      case "Menstruation":
+        parts.push(emitRecord({ ...base, type: APPLE_TYPES.MenstrualFlow, unit: "", value: "HKCategoryValueMenstrualFlowUnspecified" })); break;
+      case "MenstruationFlow": {
+        const flow = String(rec.flow || rec.level || rec.value || "").toLowerCase();
+        let value = "HKCategoryValueMenstrualFlowUnspecified";
+        if (flow.includes("light")) value = "HKCategoryValueMenstrualFlowLight";
+        else if (flow.includes("medium") || flow.includes("moderate")) value = "HKCategoryValueMenstrualFlowMedium";
+        else if (flow.includes("heavy")) value = "HKCategoryValueMenstrualFlowHeavy";
+        parts.push(emitRecord({ ...base, type: APPLE_TYPES.MenstrualFlow, unit: "", value })); break;
+      }
+      case "IntermenstrualBleeding":
+        parts.push(emitRecord({ ...base, type: APPLE_TYPES.IntermenstrualBleeding, unit: "", value: "HKCategoryValueNotApplicable" })); break;
+      case "CervicalMucus": {
+        const app = String(rec.appearance||"").toLowerCase();
+        let value = "HKCategoryValueCervicalMucusQualityDry";
+        if (app.includes("sticky")) value = "HKCategoryValueCervicalMucusQualitySticky";
+        else if (app.includes("creamy")) value = "HKCategoryValueCervicalMucusQualityCreamy";
+        else if (app.includes("watery")) value = "HKCategoryValueCervicalMucusQualityWatery";
+        else if (app.includes("egg")) value = "HKCategoryValueCervicalMucusQualityEggWhite";
+        parts.push(emitRecord({ ...base, type: APPLE_TYPES.CervicalMucusQuality, unit: "", value })); break;
+      }
+      case "OvulationTest": {
+        const r = String(rec.result||rec.value||"").toLowerCase();
+        let value = "HKCategoryValueOvulationTestResultIndeterminate";
+        if (r.includes("positive")) value = "HKCategoryValueOvulationTestResultPositive";
+        else if (r.includes("negative")) value = "HKCategoryValueOvulationTestResultNegative";
+        else if (r.includes("estrogen")) value = "HKCategoryValueOvulationTestResultEstrogenSurge";
+        parts.push(emitRecord({ ...base, type: APPLE_TYPES.OvulationTestResult, unit: "", value })); break;
+      }
+      case "SexualActivity": {
+        const value = rec.protected ? "HKCategoryValueSexualActivityProtectionUsed" : "HKCategoryValueSexualActivityProtectionNotUsed";
+        parts.push(emitRecord({ ...base, type: APPLE_TYPES.SexualActivity, unit: "", value })); break;
+      }
+      case "ExerciseSession": {
+        const startDate = start, endDate = end;
+        const sD = new Date(rec.startTime), eD = new Date(rec.endTime);
+        const durationMin = (eD.getTime() - sD.getTime())/60000;
+        let distMeters = 0;
+        for (const d of (byType["Distance"]||[])) {
+          const sd = new Date(d.startTime||d.time), ed = new Date(d.endTime||d.time);
+          if (sd<=eD && sD<=ed) distMeters += (typeof d.distance?.value==="number"? d.distance.value : 0);
+        }
+        const speeds:number[] = [];
+        for (const sp of (byType["Speed"]||[])) {
+          const sd = new Date(sp.startTime||sp.time), ed = new Date(sp.endTime||sp.time);
+          if (!(sd<=eD && sD<=ed)) continue;
+          if (Array.isArray(sp.samples) && sp.samples.length){
+            for (const smp of sp.samples){ const v = speedToMS(smp.speed||sp.speed); if (typeof v === "number") speeds.push(v); }
+          } else { const v = speedToMS(sp.speed); if (typeof v === "number") speeds.push(v); }
+        }
+        const avgSpeed = speeds.length ? (speeds.reduce((a,b)=>a+b,0)/speeds.length) : (distMeters ? (distMeters/((eD.getTime()-sD.getTime())/1000)) : undefined);
+        const maxSpeed = speeds.length ? Math.max(...speeds) : undefined;
+        let elevAsc = 0; for (const el of (byType["ElevationGained"]||[])) {
+          const sd = new Date(el.startTime||el.time), ed = new Date(el.endTime||el.time);
+          if (sd<=eD && sD<=ed) elevAsc += (typeof el.elevation?.value==="number"? el.elevation.value : 0);
+        }
+        const metadata:any[] = [];
+        if (avgSpeed !== undefined) metadata.push({ key:"HKAverageSpeed", value: `${avgSpeed} m/s` });
+        if (maxSpeed !== undefined) metadata.push({ key:"HKMaximumSpeed", value: `${maxSpeed} m/s` });
+        if (elevAsc) metadata.push({ key:"HKElevationAscended", value: `${elevAsc} m` });
+        if (typeof rec.isIndoor === "boolean") metadata.push({ key:"HKIndoorWorkout", value: rec.isIndoor ? "1":"0" });
+        const stats:any[] = [];
+        if (distMeters) stats.push({ type: APPLE_TYPES.DistanceWalkingRunning, startDate, endDate, sum: (distMeters/1000), unit: "km" });
+        let activeKCal = 0; for (const a of (byType["ActiveCaloriesBurned"]||[])){
+          const sd = new Date(a.startTime||a.time), ed = new Date(a.endTime||a.time);
+          if (sd<=eD && sD<=ed) { const ek = energyToKCal(a.energy); if (typeof ek === "number") activeKCal += ek; }
+        }
+        if (activeKCal) stats.push({ type: APPLE_TYPES.ActiveEnergyBurned, startDate, endDate, sum: activeKCal, unit: "kcal" });
+        const workoutXml = `<Workout workoutActivityType="HKWorkoutActivityTypeOther" duration="${durationMin}" durationUnit="min" sourceName="${esc(getSourceName(rec, defaultSource))}" creationDate="${startDate}" startDate="${startDate}" endDate="${endDate}">
+${metadata.map(x=>`  <MetadataEntry key="${esc(x.key)}" value="${esc(x.value)}"/>`).join("\n")}
+${stats.map(x=>`  <WorkoutStatistics type="${esc(x.type)}" startDate="${esc(x.startDate)}" endDate="${esc(x.endDate)}" sum="${esc(x.sum)}" unit="${esc(x.unit)}"/>`).join("\n")}
+</Workout>`;
+        parts.push(workoutXml);
+        break;
+      }
+      default: break;
     }
   }
-
-  parts.push("</HealthData>");
-  return parts.join("\n");
+  const header = '<?xml version="1.0" encoding="UTF-8"?>\n<HealthData locale="en_US">';
+  const footer = '</HealthData>';
+  return [header, ...parts, footer].join('\n');
 }
-
-export { convertHealthConnectJsonToAppleXml, APPLE_TYPES };

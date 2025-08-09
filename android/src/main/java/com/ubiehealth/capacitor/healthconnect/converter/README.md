@@ -21,7 +21,9 @@ der Health Connect JSON-Daten in Apple HealthKit-kompatibles XML umwandelt.
 - Gleiche Logik in TS und JS für identische Ergebnisse
 
 ## Verwendung
+
 ### TypeScript
+
 ```typescript
 import { convertHealthConnectJsonToAppleXml } from "./hc-to-apple-health";
 
@@ -34,6 +36,7 @@ const xml = convertHealthConnectJsonToAppleXml(healthConnectJson, {
 ```
 
 ### JavaScript
+
 ```javascript
 const { convertHealthConnectJsonToAppleXml } = require("./hc-to-apple-health.ts");
 

@@ -51,20 +51,6 @@ class HealthConnectPlugin : Plugin() {
     private val permissionContract by lazy {
         PermissionController.createRequestPermissionResultContract()
     }
-    private fun ensureSupportedType(name: String) {
-        val mapped = RECORDS_TYPE_NAME_MAP[name]
-        if (mapped == null) {
-            throw IllegalArgumentException("Unsupported RecordType: " + name)
-        }
-    }
-
-    private fun ensureSupportedTypes(names: List<String>) {
-        val unsupported = names.filter { RECORDS_TYPE_NAME_MAP[it] == null }
-        if (unsupported.isNotEmpty()) {
-            throw IllegalArgumentException("Unsupported RecordType(s): " + unsupported.joinToString(", "))
-        }
-    }
-
 
     @PluginMethod
     fun checkAvailability(call: PluginCall) {
@@ -97,8 +83,7 @@ class HealthConnectPlugin : Plugin() {
     @PluginMethod
     fun readRecord(call: PluginCall) {
         this.activity.lifecycleScope.launch {
-                        ensureSupportedType(requireNotNull(call.getString("type")))
-val type = call.getString("type").let {
+            val type = call.getString("type").let {
                 RECORDS_TYPE_NAME_MAP[it] ?: throw IllegalArgumentException("Unexpected RecordType: $it")
             }
 
@@ -117,8 +102,7 @@ val type = call.getString("type").let {
     @PluginMethod
     fun readRecords(call: PluginCall) {
         this.activity.lifecycleScope.launch {
-                        ensureSupportedType(requireNotNull(call.getString("type")))
-val type = call.getString("type").let {
+            val type = call.getString("type").let {
                 RECORDS_TYPE_NAME_MAP[it] ?: throw IllegalArgumentException("Unexpected RecordType: $it")
             }
             val request = ReadRecordsRequest(
@@ -143,8 +127,7 @@ val type = call.getString("type").let {
     @PluginMethod
     fun getChangesToken(call: PluginCall) {
         this.activity.lifecycleScope.launch {
-                        ensureSupportedTypes(call.getArray("types").toList<String>())
-val types = call.getArray("types").toList<String>().map {
+            val types = call.getArray("types").toList<String>().map {
                 RECORDS_TYPE_NAME_MAP[it] ?: throw IllegalArgumentException("Unexpected RecordType: $it")
             }.toSet()
             val request = ChangesTokenRequest(
@@ -198,9 +181,7 @@ val types = call.getArray("types").toList<String>().map {
             return
         }
 
-                ensureSupportedTypes(call.getArray("read").toList<String>())
-        ensureSupportedTypes(call.getArray("write").toList<String>())
-val readPermissions = call.getArray("read").toList<String>().map {
+        val readPermissions = call.getArray("read").toList<String>().map {
             HealthPermission.getReadPermission(
                 recordType = RECORDS_TYPE_NAME_MAP[it] ?: throw IllegalArgumentException("Unexpected RecordType: $it")
             )
@@ -230,9 +211,7 @@ val readPermissions = call.getArray("read").toList<String>().map {
 
     @ActivityCallback
     fun handleRequestPermission(call: PluginCall, result: ActivityResult) {
-                    ensureSupportedTypes(call.getArray("read").toList<String>())
-            ensureSupportedTypes(call.getArray("write").toList<String>())
-val reqReadPermissions = call.getArray("read").toList<String>().map {
+        val reqReadPermissions = call.getArray("read").toList<String>().map {
             HealthPermission.getReadPermission(
                     recordType = RECORDS_TYPE_NAME_MAP[it] ?: throw IllegalArgumentException("Unexpected RecordType: $it")
             )
