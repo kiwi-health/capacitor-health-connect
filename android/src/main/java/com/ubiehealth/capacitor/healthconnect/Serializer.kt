@@ -30,191 +30,19 @@ internal fun <T> List<T>.toJSONArray(): JSONArray {
 }
 
 internal fun JSONObject.toRecord(): Record {
-    return when (val type = this.get("type")) {
-        "ActiveCaloriesBurned" -> ActiveCaloriesBurnedRecord(
-            startTime = this.getInstant("startTime"),
-            startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
-            endTime = this.getInstant("endTime"),
-            endZoneOffset = this.getZoneOffsetOrNull("endZoneOffset"),
-            energy = this.getEnergy("energy"),
-        )
-        "BasalBodyTemperature" -> BasalBodyTemperatureRecord(
-            time = this.getInstant("time"),
-            zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
-            temperature = this.getTemperature("temperature"),
-            measurementLocation = this.getBodyTemperatureMeasurementLocationInt("measurementLocation"),
-        )
-        "BasalMetabolicRate" -> BasalMetabolicRateRecord(
-            time = this.getInstant("time"),
-            zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
-            basalMetabolicRate = this.getPower("basalMetabolicRate"),
-        )
-        "BloodGlucose" -> BloodGlucoseRecord(
-            time = this.getInstant("time"),
-            zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
-            level = this.getBloodGlucose("level"),
-            specimenSource = BloodGlucoseRecord.SPECIMEN_SOURCE_STRING_TO_INT_MAP
-                .getOrDefault(this.getString("specimenSource"), BloodGlucoseRecord.SPECIMEN_SOURCE_UNKNOWN),
-            mealType = MealType.MEAL_TYPE_STRING_TO_INT_MAP
-                .getOrDefault(this.getString("mealType"), MealType.MEAL_TYPE_UNKNOWN),
-            relationToMeal = BloodGlucoseRecord.RELATION_TO_MEAL_STRING_TO_INT_MAP
-                .getOrDefault(this.getString("relationToMeal"), BloodGlucoseRecord.RELATION_TO_MEAL_UNKNOWN),
-        )
-        "BloodPressure" -> BloodPressureRecord(
-            time = this.getInstant("time"),
-            zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
-            systolic = this.getPressure("systolic"),
-            diastolic = this.getPressure("diastolic"),
-            bodyPosition = BloodPressureRecord.BODY_POSITION_STRING_TO_INT_MAP
-                .getOrDefault(this.getString("bodyPosition"), BloodPressureRecord.BODY_POSITION_UNKNOWN),
-            measurementLocation = BloodPressureRecord.MEASUREMENT_LOCATION_STRING_TO_INT_MAP
-                .getOrDefault(this.getString("measurementLocation"), BloodPressureRecord.MEASUREMENT_LOCATION_UNKNOWN),
-        )
-        "BodyFat" -> BodyFatRecord(
-            time = this.getInstant("time"),
-            zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
-            percentage = this.getPercentage("percentage"),
-        )
-        "BodyTemperature" -> BodyTemperatureRecord(
-            time = this.getInstant("time"),
-            zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
-            temperature = this.getTemperature("temperature"),
-            measurementLocation = this.getBodyTemperatureMeasurementLocationInt("measurementLocation"),
-        )
-        "HeartRateSeries" -> HeartRateRecord(
-            startTime = this.getInstant("startTime"),
-            startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
-            endTime = this.getInstant("endTime"),
-            endZoneOffset = this.getZoneOffsetOrNull("endZoneOffset"),
-            samples = this.getHeartRateRecordSamplesList("samples")
-        )
-        "Height" -> HeightRecord(
-            time = this.getInstant("time"),
-            zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
-            height = this.getLength("height"),
-        )
-        "OxygenSaturation" -> OxygenSaturationRecord(
-            time = this.getInstant("time"),
-            zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
-            percentage = this.getPercentage("percentage"),
-        )
-        "RespiratoryRate" -> RespiratoryRateRecord(
-            time = this.getInstant("time"),
-            zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
-            rate = this.getDouble("rate"),
-        )
-        "RestingHeartRate" -> RestingHeartRateRecord(
-            time = this.getInstant("time"),
-            zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
-            beatsPerMinute = this.getLong("beatsPerMinute"),
-        )
-        "Steps" -> StepsRecord(
-            startTime = this.getInstant("startTime"),
-            startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
-            endTime = this.getInstant("endTime"),
-            endZoneOffset = this.getZoneOffsetOrNull("endZoneOffset"),
-            count = this.getLong("count"),
-        )
-        "Weight" -> WeightRecord(
-            time = this.getInstant("time"),
-            zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
-            weight = this.getMass("weight"),
-        )
-        else -> throw IllegalArgumentException("Unexpected record type: $type")
-    }
+    return RecordMappings.fromJson(this.getString("type"), this)
 }
 
+
 internal fun Record.toJSONObject(): JSONObject {
+    val mapped = RecordMappings.toJson(this)
     return JSONObject().also { obj ->
         obj.put("type", RECORDS_CLASS_NAME_MAP[this::class])
         obj.put("metadata", this.metadata.toJSONObject())
-
-        when (this) {
-            is ActiveCaloriesBurnedRecord -> {
-                obj.put("startTime", this.startTime)
-                obj.put("startZoneOffset", this.startZoneOffset?.toJSONValue())
-                obj.put("endTime", this.endTime)
-                obj.put("endZoneOffset", this.endZoneOffset?.toJSONValue())
-                obj.put("energy", this.energy.toJSONObject())
-            }
-            is BasalBodyTemperatureRecord -> {
-                obj.put("time", this.time)
-                obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
-                obj.put("temperature", this.temperature.toJSONObject())
-                obj.put("measurementLocation", this.measurementLocation.toBodyTemperatureMeasurementLocationString())
-            }
-            is BasalMetabolicRateRecord -> {
-                obj.put("time", this.time)
-                obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
-                obj.put("basalMetabolicRate", this.basalMetabolicRate.toJSONObject())
-            }
-            is BloodGlucoseRecord -> {
-                obj.put("time", this.time)
-                obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
-                obj.put("level", this.level.toJSONObject())
-                obj.put("specimenSource", BloodGlucoseRecord.SPECIMEN_SOURCE_INT_TO_STRING_MAP.getOrDefault(this.specimenSource, "unknown"))
-                obj.put("mealType", MealType.MEAL_TYPE_INT_TO_STRING_MAP.getOrDefault(this.mealType, "unknown"))
-                obj.put("relationToMeal", BloodGlucoseRecord.RELATION_TO_MEAL_INT_TO_STRING_MAP.getOrDefault(this.relationToMeal, "unknown"))
-            }
-            is BloodPressureRecord -> {
-                obj.put("time", this.time)
-                obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
-                obj.put("systolic", this.systolic.toJSONObject())
-                obj.put("diastolic", this.diastolic.toJSONObject())
-                obj.put("bodyPosition", BloodPressureRecord.BODY_POSITION_INT_TO_STRING_MAP.getOrDefault(this.bodyPosition, "unknown"))
-                obj.put("measurementLocation", BloodPressureRecord.MEASUREMENT_LOCATION_INT_TO_STRING_MAP.getOrDefault(this.measurementLocation, "unknown"))
-            }
-            is BodyFatRecord -> {
-                obj.put("time", this.time)
-                obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
-                obj.put("percentage", this.percentage.toJSONObject())
-            }
-            is BodyTemperatureRecord -> {
-                obj.put("time", this.time)
-                obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
-                obj.put("temperature", this.temperature.toJSONObject())
-                obj.put("measurementLocation", this.measurementLocation.toBodyTemperatureMeasurementLocationString())
-            }
-            is HeartRateRecord -> {
-                obj.put("startTime", this.startTime)
-                obj.put("startZoneOffset", this.startZoneOffset?.toJSONValue())
-                obj.put("endTime", this.endTime)
-                obj.put("endZoneOffset", this.endZoneOffset?.toJSONValue())
-                obj.put("samples", this.samples.toHeartRateRecordSamplesJSONArray())
-            }
-            is HeightRecord -> {
-                obj.put("time", this.time)
-                obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
-                obj.put("height", this.height.toJSONObject())
-            }
-            is OxygenSaturationRecord -> {
-                obj.put("time", this.time)
-                obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
-                obj.put("percentage", this.percentage.toJSONObject())
-            }
-            is RespiratoryRateRecord -> {
-                obj.put("time", this.time)
-                obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
-                obj.put("rate", this.rate)
-            }
-            is RestingHeartRateRecord -> {
-                obj.put("time", this.time)
-                obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
-                obj.put("beatsPerMinute", this.beatsPerMinute)
-            }
-            is StepsRecord -> {
-                obj.put("startTime", this.startTime)
-                obj.put("startZoneOffset", this.startZoneOffset?.toJSONValue())
-                obj.put("endTime", this.endTime)
-                obj.put("endZoneOffset", this.endZoneOffset?.toJSONValue())
-                obj.put("count", this.count)
-            }
-            is WeightRecord -> {
-                obj.put("time", this.time)
-                obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
-                obj.put("weight", this.weight.toJSONObject())
-            }
-            else -> throw IllegalArgumentException("Unexpected record class: $${this::class.qualifiedName}")
+        val keys = mapped.keys()
+        while (keys.hasNext()) {
+            val k = keys.next()
+            obj.put(k, mapped.get(k))
         }
     }
 }
@@ -452,4 +280,89 @@ internal fun JSONObject.getPercentage(name: String): Percentage {
     val obj = requireNotNull(this.getJSONObject(name))
     val value = obj.getDouble("value")
     return Percentage(value)
+}
+
+
+internal fun JSONObject.getVolume(name: String): Volume {
+    val obj = requireNotNull(this.getJSONObject(name))
+    val unit = obj.getString("unit")
+    val value = obj.getDouble("value")
+    return when (unit) {
+        "milliliters" -> Volume.milliliters(value)
+        "liters" -> Volume.liters(value)
+        "fluidOuncesUs" -> Volume.fluidOuncesUs(value)
+        else -> throw RuntimeException("Invalid Volume unit: $unit")
+    }
+}
+
+internal fun Volume.toJSONObject(): JSONObject {
+    return JSONObject().also { obj ->
+        obj.put("unit", "milliliters") // default
+        obj.put("value", this.inMilliliters)
+    }
+}
+
+
+// --- Added helpers for cadence/speed sample series ---
+internal fun StepsCadenceRecord.Sample.toJSONObject(): JSONObject {
+    return JSONObject().also { o ->
+        o.put("time", this.time)
+        o.put("rate", this.rate) // steps per minute
+    }
+}
+internal fun List<StepsCadenceRecord.Sample>.toStepsCadenceJSONArray(): JSONArray {
+    val arr = JSONArray()
+    this.forEach { arr.put(it.toJSONObject()) }
+    return arr
+}
+internal fun JSONObject.getStepsCadenceSamples(name: String): List<StepsCadenceRecord.Sample> {
+    val arr = this.getJSONArray(name)
+    return arr.toList<JSONObject>().map {
+        StepsCadenceRecord.Sample(
+            time = it.getInstant("time"),
+            rate = it.getDouble("rate")
+        )
+    }
+}
+
+internal fun CyclingPedalingCadenceRecord.Sample.toJSONObject(): JSONObject {
+    return JSONObject().also { o ->
+        o.put("time", this.time)
+        o.put("revolutionsPerMinute", this.revolutionsPerMinute)
+    }
+}
+internal fun List<CyclingPedalingCadenceRecord.Sample>.toCyclingCadenceJSONArray(): JSONArray {
+    val arr = JSONArray()
+    this.forEach { arr.put(it.toJSONObject()) }
+    return arr
+}
+internal fun JSONObject.getCyclingCadenceSamples(name: String): List<CyclingPedalingCadenceRecord.Sample> {
+    val arr = this.getJSONArray(name)
+    return arr.toList<JSONObject>().map {
+        CyclingPedalingCadenceRecord.Sample(
+            time = it.getInstant("time"),
+            revolutionsPerMinute = it.getDouble("revolutionsPerMinute")
+        )
+    }
+}
+
+internal fun SpeedRecord.Sample.toJSONObject(): JSONObject {
+    return JSONObject().also { o ->
+        o.put("time", this.time)
+        o.put("metersPerSecond", this.metersPerSecond)
+    }
+}
+internal fun List<SpeedRecord.Sample>.toSpeedSamplesJSONArray(): JSONArray {
+    val arr = JSONArray()
+    this.forEach { arr.put(it.toJSONObject()) }
+    return arr
+}
+internal fun JSONObject.getSpeedSamples(name: String): List<SpeedRecord.Sample> {
+    val arr = this.getJSONArray(name)
+    return arr.toList<JSONObject>().map {
+        SpeedRecord.Sample(
+            time = it.getInstant("time"),
+            metersPerSecond = it.getDouble("metersPerSecond")
+        )
+    }
 }
