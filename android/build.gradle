@@ -65,5 +65,5 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     // TODO: version variable
-    implementation "androidx.health.connect:connect-client:1.1.0-alpha10"
+    implementation "androidx.health.connect:connect-client:1.1.0-beta02"
 }
