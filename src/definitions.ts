@@ -48,6 +48,7 @@ export type RecordType =
   | 'BodyTemperature'
   | 'BodyWaterMass'
   | 'BoneMass'
+  | 'CervicalMucus'
   | 'HeartRateSeries'
   | 'Height'
   | 'OxygenSaturation'
@@ -141,6 +142,13 @@ export type Record =
       time: Date;
       zoneOffset?: string;
       mass: Mass;
+    }
+  | {
+      type: 'CervicalMucus';
+      time: Date;
+      zoneOffset?: string;
+      appearance: string;
+      sensation: string;
     }
   | {
       type: 'HeartRateSeries';

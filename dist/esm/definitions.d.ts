@@ -53,7 +53,7 @@ export interface HealthConnectPlugin {
     openHealthConnectSetting(): Promise<void>;
 }
 export type HealthConnectAvailability = 'Available' | 'NotInstalled' | 'NotSupported';
-export type RecordType = 'ActiveCaloriesBurned' | 'BasalBodyTemperature' | 'BasalMetabolicRate' | 'BloodGlucose' | 'BloodPressure' | 'BodyFat' | 'BodyTemperature' | 'BodyWaterMass' | 'BoneMass' | 'HeartRateSeries' | 'Height' | 'OxygenSaturation' | 'RespiratoryRate' | 'RestingHeartRate' | 'Steps' | 'Weight';
+export type RecordType = 'ActiveCaloriesBurned' | 'BasalBodyTemperature' | 'BasalMetabolicRate' | 'BloodGlucose' | 'BloodPressure' | 'BodyFat' | 'BodyTemperature' | 'BodyWaterMass' | 'BoneMass' | 'CervicalMucus' | 'HeartRateSeries' | 'Height' | 'OxygenSaturation' | 'RespiratoryRate' | 'RestingHeartRate' | 'Steps' | 'Weight';
 type RecordBase = {
     metadata: RecordMetadata;
 };
@@ -113,6 +113,12 @@ export type Record = {
     time: Date;
     zoneOffset?: string;
     mass: Mass;
+} | {
+    type: 'CervicalMucus';
+    time: Date;
+    zoneOffset?: string;
+    appearance: string;
+    sensation: string;
 } | {
     type: 'HeartRateSeries';
     startTime: Date;
