@@ -81,6 +81,11 @@ internal fun JSONObject.toRecord(): Record {
             temperature = this.getTemperature("temperature"),
             measurementLocation = this.getBodyTemperatureMeasurementLocationInt("measurementLocation"),
         )
+         "BodyWaterMass" -> BodyWaterMassRecord(
+            time = this.getInstant("time"),
+            zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
+            mass = this.getMass("mass"),
+        )
         "HeartRateSeries" -> HeartRateRecord(
             startTime = this.getInstant("startTime"),
             startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
@@ -174,6 +179,11 @@ internal fun Record.toJSONObject(): JSONObject {
                 obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
                 obj.put("temperature", this.temperature.toJSONObject())
                 obj.put("measurementLocation", this.measurementLocation.toBodyTemperatureMeasurementLocationString())
+            }
+            is BodyWaterMassRecord -> {
+                obj.put("time", this.time);
+                obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
+                obj.put("mass", this.mass.toJSONObject())
             }
             is HeartRateRecord -> {
                 obj.put("startTime", this.startTime)
