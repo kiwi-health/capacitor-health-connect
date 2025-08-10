@@ -16,7 +16,6 @@ import org.json.JSONObject
 import java.lang.RuntimeException
 import java.time.Instant
 import java.time.ZoneOffset
-import RecordTypeRegistry
 
 internal fun <T> JSONArray.toList(): List<T> {
     return (0 until this.length()).map {
@@ -86,7 +85,7 @@ internal fun JSONObject.toRecord(): Record {
             zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
             mass = this.getMass("mass"),
         )
-         "BoneMassRecord" -> BoneMassRecordRecord(
+         "BoneMass" -> BoneMassRecord(
             time = this.getInstant("time"),
             zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
             mass = this.getMass("mass"),

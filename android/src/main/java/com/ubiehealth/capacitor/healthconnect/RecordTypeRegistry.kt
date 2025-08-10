@@ -25,20 +25,20 @@ object RecordTypeRegistry {
         "Hydration" to HydrationRecord::class,
         "IntermenstrualBleeding" to IntermenstrualBleedingRecord::class,
         "LeanBodyMass" to LeanBodyMassRecord::class,
-        "Menstruation" to MenstruationRecord::class,               // falls deine Version Period/Flow trennt, s.u.
+        // "Menstruation" to MenstruationRecord::class,               // falls deine Version Period/Flow trennt, s.u.
         "MenstruationFlow" to MenstruationFlowRecord::class,       // 1.2.0 alpha: vorhanden
         "MenstruationPeriod" to MenstruationPeriodRecord::class,   // 1.2.0 alpha: vorhanden
         "Nutrition" to NutritionRecord::class,
         "OvulationTest" to OvulationTestRecord::class,
         "OxygenSaturation" to OxygenSaturationRecord::class,
-        "PlannedExercise" to PlannedExerciseRecord::class,         // falls du PlannedExerciseSessionRecord nutzt, ggf. anpassen
+        // "PlannedExercise" to PlannedExerciseRecord::class,         // falls du PlannedExerciseSessionRecord nutzt, ggf. anpassen
         "PlannedExerciseSession" to PlannedExerciseSessionRecord::class,
         "Power" to PowerRecord::class,
         "RespiratoryRate" to RespiratoryRateRecord::class,
         "RestingHeartRate" to RestingHeartRateRecord::class,
         "SexualActivity" to SexualActivityRecord::class,
         "SleepSession" to SleepSessionRecord::class,
-        "SleepStage" to SleepStageRecord::class,
+        // "SleepStage" to SleepStageRecord::class,
         "SkinTemperature" to SkinTemperatureRecord::class,
         "Speed" to SpeedRecord::class,
         "Steps" to StepsRecord::class,
