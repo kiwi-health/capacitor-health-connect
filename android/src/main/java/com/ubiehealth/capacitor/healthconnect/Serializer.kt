@@ -96,6 +96,27 @@ internal fun JSONObject.toRecord(): Record {
             appearance = this.getString("appearance"),
             sensation = this.getString("sensation"),
         )
+        "Distance" -> DistanceRecord(
+            startTime = this.getInstant("startTime"),
+            startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
+            endTime = this.getInstant("endTime"),
+            endZoneOffset = this.getZoneOffsetOrNull("endZoneOffset"),
+            distance = this.getLength("distance"),
+        )
+        "ElevationGained" -> ElevationGainedRecord(
+            startTime = this.getInstant("startTime"),
+            startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
+            endTime = this.getInstant("endTime"),
+            endZoneOffset = this.getZoneOffsetOrNull("endZoneOffset"),
+            elevation = this.getLength("elevation")
+        )
+        "FloorsClimbed" -> FloorsClimbedRecord(
+            startTime = this.getInstant("startTime"),
+            startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
+            endTime = this.getInstant("endTime"),
+            endZoneOffset = this.getZoneOffsetOrNull("endZoneOffset"),
+            floors = this.getDouble("floors")
+        )
         "HeartRateSeries" -> HeartRateRecord(
             startTime = this.getInstant("startTime"),
             startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
@@ -107,6 +128,13 @@ internal fun JSONObject.toRecord(): Record {
             time = this.getInstant("time"),
             zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
             height = this.getLength("height"),
+        )
+        "Hydration" -> HydrationRecord(
+            startTime = this.getInstant("startTime"),
+            startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
+            endTime = this.getInstant("endTime"),
+            endZoneOffset = this.getZoneOffsetOrNull("endZoneOffset"),
+            volume = this.getVolume("volume")
         )
         "OxygenSaturation" -> OxygenSaturationRecord(
             time = this.getInstant("time"),
@@ -431,6 +459,24 @@ internal fun JSONObject.getPressure(name: String): Pressure {
     return when (val unit = obj.getString("unit")) {
         "millimetersOfMercury" -> Pressure.millimetersOfMercury(value)
         else -> throw RuntimeException("Invalid Pressure unit: $unit")
+    }
+}
+
+internal fun Volume.toJSONObject(): JSONObject {
+    return JSONObject().also { obj ->
+        obj.put("unit", "liter") // TODO: support other units
+        obj.put("value", this.inLiters)
+    }
+}
+
+internal fun JSONObject.getVolume(name: String): Volume {
+    val obj = requireNotNull(this.getJSONObject(name))
+
+    val value = obj.getDouble("value")
+    return when (val unit = obj.getString("unit")) {
+        "milliliter" -> Volume.milliliters(value)
+        "liter" -> Volume.liters(value)
+        else -> throw RuntimeException("Invalid Volume unit: $unit")
     }
 }
 

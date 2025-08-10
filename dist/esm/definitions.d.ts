@@ -53,7 +53,7 @@ export interface HealthConnectPlugin {
     openHealthConnectSetting(): Promise<void>;
 }
 export type HealthConnectAvailability = 'Available' | 'NotInstalled' | 'NotSupported';
-export type RecordType = 'ActiveCaloriesBurned' | 'BasalBodyTemperature' | 'BasalMetabolicRate' | 'BloodGlucose' | 'BloodPressure' | 'BodyFat' | 'BodyTemperature' | 'BodyWaterMass' | 'BoneMass' | 'CervicalMucus' | 'HeartRateSeries' | 'Height' | 'OxygenSaturation' | 'RespiratoryRate' | 'RestingHeartRate' | 'Steps' | 'Weight';
+export type RecordType = 'ActiveCaloriesBurned' | 'BasalBodyTemperature' | 'BasalMetabolicRate' | 'BloodGlucose' | 'BloodPressure' | 'BodyFat' | 'BodyTemperature' | 'BodyWaterMass' | 'BoneMass' | 'CervicalMucus' | 'Distance' | 'ElevationGained' | 'FloorsClimbed' | 'HeartRateSeries' | 'Height' | 'Hydration' | 'OxygenSaturation' | 'RespiratoryRate' | 'RestingHeartRate' | 'Steps' | 'Weight';
 type RecordBase = {
     metadata: RecordMetadata;
 };
@@ -120,6 +120,27 @@ export type Record = {
     appearance: string;
     sensation: string;
 } | {
+    type: 'Distance';
+    startTime: Date;
+    startZoneOffset?: string;
+    endTime: Date;
+    endZoneOffset?: string;
+    distance: Length;
+} | {
+    type: 'ElevationGained';
+    startTime: Date;
+    startZoneOffset?: string;
+    endTime: Date;
+    endZoneOffset?: string;
+    elevation: Length;
+} | {
+    type: 'FloorsClimbed';
+    startTime: Date;
+    startZoneOffset?: string;
+    endTime: Date;
+    endZoneOffset?: string;
+    floors: number;
+} | {
     type: 'HeartRateSeries';
     startTime: Date;
     startZoneOffset?: string;
@@ -131,6 +152,13 @@ export type Record = {
     time: Date;
     zoneOffset?: string;
     height: Length;
+} | {
+    type: 'Hydration';
+    startTime: Date;
+    startZoneOffset?: string;
+    endTime: Date;
+    endZoneOffset?: string;
+    volume: Volume;
 } | {
     type: 'OxygenSaturation';
     time: Date;
@@ -194,6 +222,10 @@ export type Temperature = {
     value: number;
 };
 export type Percentage = {
+    value: number;
+};
+export type Volume = {
+    unit: 'liter' | 'milliliter';
     value: number;
 };
 export type Power = {

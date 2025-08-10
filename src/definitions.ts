@@ -49,8 +49,12 @@ export type RecordType =
   | 'BodyWaterMass'
   | 'BoneMass'
   | 'CervicalMucus'
+  | 'Distance'
+  | 'ElevationGained'
+  | 'FloorsClimbed'
   | 'HeartRateSeries'
   | 'Height'
+  | 'Hydration'
   | 'OxygenSaturation'
   | 'RespiratoryRate'
   | 'RestingHeartRate'
@@ -151,6 +155,30 @@ export type Record =
       sensation: string;
     }
   | {
+      type: 'Distance';
+      startTime: Date;
+      startZoneOffset?: string;
+      endTime: Date;
+      endZoneOffset?: string;
+      distance: Length;
+    }
+  | {
+      type: 'ElevationGained';
+      startTime: Date;
+      startZoneOffset?: string;
+      endTime: Date;
+      endZoneOffset?: string;
+      elevation: Length;
+    }
+  | {
+      type: 'FloorsClimbed';
+      startTime: Date;
+      startZoneOffset?: string;
+      endTime: Date;
+      endZoneOffset?: string;
+      floors: number;
+    }
+  | {
       type: 'HeartRateSeries';
       startTime: Date;
       startZoneOffset?: string;
@@ -163,6 +191,14 @@ export type Record =
       time: Date;
       zoneOffset?: string;
       height: Length;
+    }
+  | {
+      type: 'Hydration';
+      startTime: Date;
+      startZoneOffset?: string;
+      endTime: Date;
+      endZoneOffset?: string;
+      volume: Volume;
     }
   | {
       type: 'OxygenSaturation';
@@ -235,6 +271,10 @@ export type Temperature = {
   value: number;
 };
 export type Percentage = {
+  value: number;
+};
+export type Volume = {
+  unit: 'liter' | 'milliliter';
   value: number;
 };
 export type Power = {

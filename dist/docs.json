@@ -1064,11 +1064,27 @@
           "complexTypes": []
         },
         {
+          "text": "'Distance'",
+          "complexTypes": []
+        },
+        {
+          "text": "'ElevationGained'",
+          "complexTypes": []
+        },
+        {
+          "text": "'FloorsClimbed'",
+          "complexTypes": []
+        },
+        {
           "text": "'HeartRateSeries'",
           "complexTypes": []
         },
         {
           "text": "'Height'",
+          "complexTypes": []
+        },
+        {
+          "text": "'Hydration'",
           "complexTypes": []
         },
         {
