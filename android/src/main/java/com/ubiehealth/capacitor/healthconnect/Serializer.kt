@@ -93,8 +93,8 @@ internal fun JSONObject.toRecord(): Record {
          "CervicalMucus" -> CervicalMucusRecord(
             time = this.getInstant("time"),
             zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
-            appearance = this.getString("appearance"),
-            sensation = this.getString("sensation"),
+            appearance = this.getInt("appearance"),
+            sensation = this.getInt("sensation"),
         )
         "Distance" -> DistanceRecord(
             startTime = this.getInstant("startTime"),
