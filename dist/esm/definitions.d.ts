@@ -117,8 +117,8 @@ export type Record = {
     type: 'CervicalMucus';
     time: Date;
     zoneOffset?: string;
-    appearance: string;
-    sensation: string;
+    appearance?: number;
+    sensation?: number;
 } | {
     type: 'Distance';
     startTime: Date;
