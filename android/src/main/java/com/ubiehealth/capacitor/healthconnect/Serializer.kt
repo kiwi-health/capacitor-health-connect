@@ -6,8 +6,8 @@ import androidx.health.connect.client.changes.UpsertionChange
 import androidx.health.connect.client.records.*
 import androidx.health.connect.client.records.BodyTemperatureMeasurementLocation.MEASUREMENT_LOCATION_INT_TO_STRING_MAP
 import androidx.health.connect.client.records.BodyTemperatureMeasurementLocation.MEASUREMENT_LOCATION_STRING_TO_INT_MAP
-// import androidx.health.connect.client.records.metadata.DataOrigin
-// import androidx.health.connect.client.records.metadata.Metadata
+import androidx.health.connect.client.records.metadata.DataOrigin
+import androidx.health.connect.client.records.metadata.Metadata
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.health.connect.client.units.*
 import com.getcapacitor.JSObject
@@ -132,7 +132,7 @@ internal fun JSONObject.toRecord(): Record {
 internal fun Record.toJSONObject(): JSONObject {
     return JSONObject().also { obj ->
         obj.put("type", RecordTypeRegistry.CLASS_TO_NAME[this::class])
-        // obj.put("metadata", this.metadata.toJSONObject())
+        obj.put("metadata", this.metadata.toJSONObject())
 
         when (this) {
             is ActiveCaloriesBurnedRecord -> {
@@ -229,15 +229,15 @@ internal fun Record.toJSONObject(): JSONObject {
     }
 }
 
-// internal fun Metadata.toJSONObject(): JSONObject {
-//     return JSONObject().also { obj ->
-//         obj.put("id", this.id)
-//         obj.put("clientRecordId", this.clientRecordId)
-//         obj.put("clientRecordVersion", this.clientRecordVersion)
-//         obj.put("lastModifiedTime", this.lastModifiedTime)
-//         obj.put("dataOrigin", this.dataOrigin.packageName)
-//     }
-// }
+internal fun Metadata.toJSONObject(): JSONObject {
+    return JSONObject().also { obj ->
+        obj.put("id", this.id)
+        obj.put("clientRecordId", this.clientRecordId)
+        obj.put("clientRecordVersion", this.clientRecordVersion)
+        obj.put("lastModifiedTime", this.lastModifiedTime)
+        obj.put("dataOrigin", this.dataOrigin.packageName)
+    }
+}
 
 internal fun Change.toJSObject(): JSObject {
     return JSObject().also { obj ->
