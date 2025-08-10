@@ -47,6 +47,7 @@ export type RecordType =
   | 'BodyFat'
   | 'BodyTemperature'
   | 'BodyWaterMass'
+  | 'BoneMass'
   | 'HeartRateSeries'
   | 'Height'
   | 'OxygenSaturation'
@@ -131,6 +132,12 @@ export type Record =
     }
   | {
       type: 'BodyWaterMass';
+      time: Date;
+      zoneOffset?: string;
+      mass: Mass;
+    }
+  | {
+      type: 'BoneMass';
       time: Date;
       zoneOffset?: string;
       mass: Mass;
