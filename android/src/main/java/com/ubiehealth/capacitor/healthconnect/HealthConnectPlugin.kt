@@ -11,9 +11,8 @@ import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.changes.Change
 import androidx.health.connect.client.changes.DeletionChange
 import androidx.health.connect.client.changes.UpsertionChange
-import androidx.health.connect.client.impl.converters.datatype.RECORDS_CLASS_NAME_MAP
-import androidx.health.connect.client.impl.converters.datatype.RECORDS_TYPE_NAME_MAP
 import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.records.*
 import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.WeightRecord
@@ -42,6 +41,7 @@ import java.lang.RuntimeException
 import java.time.Instant
 import java.time.ZoneOffset
 import java.util.Date
+import kotlin.reflect.KClass
 
 @CapacitorPlugin(name = "HealthConnect")
 class HealthConnectPlugin : Plugin() {
@@ -81,9 +81,8 @@ class HealthConnectPlugin : Plugin() {
     @PluginMethod
     fun readRecord(call: PluginCall) {
         this.activity.lifecycleScope.launch {
-            val type = call.getString("type").let {
-                RECORDS_TYPE_NAME_MAP[it] ?: throw IllegalArgumentException("Unexpected RecordType: $it")
-            }
+            val typeName = requireNotNull(call.getString("type"))
+            val type = RecordTypeRegistry.requireClass(typeName)
 
             val result = healthConnectClient.readRecord(
                     recordType = type,
@@ -100,9 +99,8 @@ class HealthConnectPlugin : Plugin() {
     @PluginMethod
     fun readRecords(call: PluginCall) {
         this.activity.lifecycleScope.launch {
-            val type = call.getString("type").let {
-                RECORDS_TYPE_NAME_MAP[it] ?: throw IllegalArgumentException("Unexpected RecordType: $it")
-            }
+            val typeName = requireNotNull(call.getString("type"))
+            val type = RecordTypeRegistry.requireClass(typeName)
             val request = ReadRecordsRequest(
                     recordType = type,
                     timeRangeFilter = call.data.getTimeRangeFilter("timeRangeFilter"),
@@ -125,9 +123,9 @@ class HealthConnectPlugin : Plugin() {
     @PluginMethod
     fun getChangesToken(call: PluginCall) {
         this.activity.lifecycleScope.launch {
-            val types = call.getArray("types").toList<String>().map {
-                RECORDS_TYPE_NAME_MAP[it] ?: throw IllegalArgumentException("Unexpected RecordType: $it")
-            }.toSet()
+            val types: Set<KClass<out Record>> = call.getArray("types").toList<String>()
+                .map { RecordTypeRegistry.requireClass(it) }
+                .toSet()
             val request = ChangesTokenRequest(
                     recordTypes = types,
                     dataOriginFilters = call.data.getDataOriginFilter("dataOriginFilter"),
@@ -179,15 +177,12 @@ class HealthConnectPlugin : Plugin() {
             return
         }
 
-        val readPermissions = call.getArray("read").toList<String>().map {
-            HealthPermission.getReadPermission(
-                recordType = RECORDS_TYPE_NAME_MAP[it] ?: throw IllegalArgumentException("Unexpected RecordType: $it")
-            )
+        val readPermissions = call.getArray("read").toList<String>().map { name ->
+            HealthPermission.getReadPermission(recordType = RecordTypeRegistry.requireClass(name))
         }.toSet()
-        val writePermissions = call.getArray("write").toList<String>().map {
-            HealthPermission.getWritePermission(
-                recordType = RECORDS_TYPE_NAME_MAP[it] ?: throw IllegalArgumentException("Unexpected RecordType: $it")
-            )
+
+        val writePermissions = call.getArray("write").toList<String>().map { name ->
+            HealthPermission.getWritePermission(recordType = RecordTypeRegistry.requireClass(name))
         }.toSet()
 
         val intent = permissionContract.createIntent(
@@ -209,15 +204,11 @@ class HealthConnectPlugin : Plugin() {
 
     @ActivityCallback
     fun handleRequestPermission(call: PluginCall, result: ActivityResult) {
-        val reqReadPermissions = call.getArray("read").toList<String>().map {
-            HealthPermission.getReadPermission(
-                    recordType = RECORDS_TYPE_NAME_MAP[it] ?: throw IllegalArgumentException("Unexpected RecordType: $it")
-            )
+        val reqReadPermissions = call.getArray("read").toList<String>().map { name ->
+            HealthPermission.getReadPermission(recordType = RecordTypeRegistry.requireClass(name))
         }.toSet()
-        val reqWritePermissions = call.getArray("write").toList<String>().map {
-            HealthPermission.getWritePermission(
-                    recordType = RECORDS_TYPE_NAME_MAP[it] ?: throw IllegalArgumentException("Unexpected RecordType: $it")
-            )
+        val reqWritePermissions = call.getArray("write").toList<String>().map { name ->
+            HealthPermission.getWritePermission(recordType = RecordTypeRegistry.requireClass(name))
         }.toSet()
 
         val grantedPermissions = permissionContract.parseResult(result.resultCode, result.data).toSet()
@@ -233,17 +224,12 @@ class HealthConnectPlugin : Plugin() {
     @PluginMethod
     fun checkHealthPermissions(call: PluginCall) {
         this.activity.lifecycleScope.launch {
-            val reqReadPermissions = call.getArray("read").toList<String>().map {
-                HealthPermission.getReadPermission(
-                        recordType = RECORDS_TYPE_NAME_MAP[it]
-                                ?: throw IllegalArgumentException("Unexpected RecordType: $it")
-                )
+            val reqReadPermissions = call.getArray("read").toList<String>().map { name ->
+                HealthPermission.getReadPermission(recordType = RecordTypeRegistry.requireClass(name))
             }.toSet()
-            val reqWritePermissions = call.getArray("write").toList<String>().map {
-                HealthPermission.getWritePermission(
-                        recordType = RECORDS_TYPE_NAME_MAP[it]
-                                ?: throw IllegalArgumentException("Unexpected RecordType: $it")
-                )
+
+            val reqWritePermissions = call.getArray("write").toList<String>().map { name ->
+                HealthPermission.getWritePermission(recordType = RecordTypeRegistry.requireClass(name))
             }.toSet()
 
             val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
