@@ -251,7 +251,7 @@ export type Record =
       endZoneOffset?: string;
       title?: string;
       notes?: string;
-      stages: number;
+      stages: SleepSessionStage[];
     }
   | {
       type: 'Steps';
@@ -318,6 +318,11 @@ export type HeartRateSample = {
 export type CyclingPedalingCadenceSample = {
   time: Date;
   revolutionsPerMinute: number;
+};
+export type SleepSessionStage = {
+  startTime: Date;
+  endTime: Date;
+  stage: number;
 };
 export type Temperature = {
   unit: 'celsius' | 'fahrenheit';

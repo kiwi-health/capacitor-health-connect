@@ -1104,6 +1104,10 @@
           "complexTypes": []
         },
         {
+          "text": "'SleepSession'",
+          "complexTypes": []
+        },
+        {
           "text": "'Steps'",
           "complexTypes": []
         },
