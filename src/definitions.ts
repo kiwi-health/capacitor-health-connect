@@ -68,7 +68,7 @@ export type RecordType =
   | 'RespiratoryRate'
   | 'RestingHeartRate'
   // | 'SexualActivity'
-  // | 'SleepSession'
+  | 'SleepSession'
   // | 'SkinTemperature'
   // | 'Speed'
   | 'Steps'
@@ -242,6 +242,16 @@ export type Record =
       time: Date;
       zoneOffset?: string;
       beatsPerMinute: number;
+    }
+  | {
+      type: 'SleepSession';
+      startTime: Date;
+      startZoneOffset?: string;
+      endTime: Date;
+      endZoneOffset?: string;
+      title?: string;
+      notes?: string;
+      stages: number;
     }
   | {
       type: 'Steps';
