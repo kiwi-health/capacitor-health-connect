@@ -16,6 +16,7 @@ object RecordTypeRegistry {
         "BodyWaterMass" to BodyWaterMassRecord::class,
         "BoneMass" to BoneMassRecord::class,
         "CervicalMucus" to CervicalMucusRecord::class,
+        "CyclingPedalingCadence" to CyclingPedalingCadenceRecord::class,
         "Distance" to DistanceRecord::class,
         "ElevationGained" to ElevationGainedRecord::class,
         "ExerciseSession" to ExerciseSessionRecord::class,
@@ -47,7 +48,6 @@ object RecordTypeRegistry {
         "Vo2Max" to Vo2MaxRecord::class,
         "Weight" to WeightRecord::class,
         "WheelchairPushes" to WheelchairPushesRecord::class,
-        "CyclingPedalingCadence" to CyclingPedalingCadenceRecord::class,
     )
 
     // (Optional) Inverse Map, falls du sie brauchst

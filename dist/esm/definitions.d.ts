@@ -210,7 +210,7 @@ export type TimeRangeFilter = {
     endTime: Date;
 };
 export type Energy = {
-    unit: 'calories' | 'kilocalories' | 'joules' | 'kilojoules';
+    unit: 'kcal';
     value: number;
 };
 export type HeartRateSample = {
@@ -233,7 +233,7 @@ export type Power = {
     value: number;
 };
 export type Pressure = {
-    unit: 'millimetersOfMercury';
+    unit: 'mmHg';
     value: number;
 };
 export type Length = {

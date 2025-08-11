@@ -96,6 +96,13 @@ internal fun JSONObject.toRecord(): Record {
             appearance = this.getInt("appearance"),
             sensation = this.getInt("sensation"),
         )
+        "CyclingPedalingCadence" -> CyclingPedalingCadenceRecord(
+            startTime =  this.getInstant("startTime"),
+            startZoneOffset =  this.getZoneOffsetOrNull("startZoneOffset"),
+            endTime =  this.getInstant("endTime"),
+            endZoneOffset =  this.getZoneOffsetOrNull("endZoneOffset"),
+            samples = this.getCyclingPedalingCadenceRecordSamplesList("samples")
+        )
         "Distance" -> DistanceRecord(
             startTime = this.getInstant("startTime"),
             startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
@@ -233,6 +240,13 @@ internal fun Record.toJSONObject(): JSONObject {
                 obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
                 obj.put("appearance", this.appearance)
                 obj.put("sensation", this.sensation)
+            }
+            is CyclingPedalingCadenceRecord -> {
+                obj.put("startTime", this.startTime)
+                obj.put("startZoneOffset", this.startZoneOffset?.toJSONValue())
+                obj.put("endTime", this.endTime)
+                obj.put("endZoneOffset", this.endZoneOffset?.toJSONValue())
+                obj.put("samples", this.samples.toCyclingPedalingCadenceRecordSamplesJSONArray())
             }
             is DistanceRecord -> {
                 obj.put("startTime", this.startTime)
@@ -457,7 +471,7 @@ internal fun JSONObject.getBodyTemperatureMeasurementLocationInt(name: String): 
 
 internal fun Power.toJSONObject(): JSONObject {
     return JSONObject().also { obj ->
-        obj.put("unit", "kilocaloriesPerDay") // TODO: support other units
+        obj.put("unit", "kcal") // TODO: support other units
         obj.put("value", this.inKilocaloriesPerDay)
     }
 }
@@ -543,6 +557,31 @@ internal fun JSONObject.getHeartRateRecordSamplesList(name: String): List<HeartR
         HeartRateRecord.Sample(
             time = jsonObj.getInstant("time"),
             beatsPerMinute = jsonObj.getLong("beatsPerMinute")
+        )
+    }
+}
+
+internal fun CyclingPedalingCadenceRecord.Sample.toJSONObject(): JSONObject {
+    return JSONObject().also { jsonObject ->
+        jsonObject.put("time", this.time)
+        jsonObject.put("revolutionsPerMinute", this.revolutionsPerMinute)
+    }
+}
+
+internal fun List<CyclingPedalingCadenceRecord.Sample>.toCyclingPedalingCadenceRecordSamplesJSONArray(): JSONArray {
+    return JSONArray().also { jsonArray ->
+        this.forEach { sample ->
+            jsonArray.put(sample.toJSONObject())
+        }
+    }
+}
+
+internal fun JSONObject.getCyclingPedalingCadenceRecordSamplesList(name: String): List<CyclingPedalingCadenceRecord.Sample> {
+    val jsonArray = this.getJSONArray(name)
+    return jsonArray.toList<JSONObject>().map { jsonObj ->
+        CyclingPedalingCadenceRecord.Sample(
+            time = jsonObj.getInstant("time"),
+            revolutionsPerMinute = jsonObj.getDouble("revolutionsPerMinute")
         )
     }
 }

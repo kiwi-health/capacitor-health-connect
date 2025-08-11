@@ -49,7 +49,7 @@ export type RecordType =
   | 'BodyWaterMass'
   | 'BoneMass'
   | 'CervicalMucus'
-  // | 'CyclingPedalingCadence'
+  | 'CyclingPedalingCadence'
   | 'Distance'
   | 'ElevationGained'
   | 'FloorsClimbed'
@@ -172,6 +172,14 @@ export type Record =
       sensation?: number;
     }
   | {
+      type: 'CyclingPedalingCadence';
+      startTime: Date;
+      startZoneOffset?: string;
+      endTime: Date;
+      endZoneOffset?: string;
+      samples: CyclingPedalingCadenceSample[];
+    }
+  | {
       type: 'Distance';
       startTime: Date;
       startZoneOffset?: string;
@@ -283,6 +291,10 @@ export type HeartRateSample = {
   time: Date;
   beatsPerMinute: number;
 };
+export type CyclingPedalingCadenceSample = {
+  time: Date;
+  revolutionsPerMinute: number;
+};
 export type Temperature = {
   unit: 'celsius' | 'fahrenheit';
   value: number;
@@ -295,7 +307,7 @@ export type Volume = {
   value: number;
 };
 export type Power = {
-  unit: 'kilocaloriesPerDay' | 'watts';
+  unit: 'kcal'; // 'kilocaloriesPerDay' | 'watts';
   value: number;
 };
 export type Pressure = {
