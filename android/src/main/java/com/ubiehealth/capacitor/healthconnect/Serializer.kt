@@ -331,7 +331,7 @@ internal fun Record.toJSONObject(): JSONObject {
                 obj.put("endZoneOffset", this.endZoneOffset?.toJSONValue())
                 obj.put("title", this.title)
                 obj.put("notes", this.notes)
-                obj.put("stages", this.stages.toSleepSessionRecordStagesJSONArray()))
+                obj.put("stages", this.stages.toSleepSessionRecordStagesJSONArray())
             }
             is StepsRecord -> {
                 obj.put("startTime", this.startTime)
