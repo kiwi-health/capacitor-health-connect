@@ -165,6 +165,18 @@ internal fun JSONObject.toRecord(): Record {
             endZoneOffset = this.getZoneOffsetOrNull("endZoneOffset"),
             count = this.getLong("count"),
         )
+        "TotalCaloriesBurned" -> TotalCaloriesBurnedRecord(
+            startTime = this.getInstant("startTime"),
+            startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
+            endTime = this.getInstant("endTime"),
+            endZoneOffset = this.getZoneOffsetOrNull("endZoneOffset"),
+            energy = this.getEnergy("energy")
+        )
+        "Vo2Max" -> Vo2MaxRecord(
+            time = this.getInstant("time"),
+            zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
+            vo2MillilitersPerMinuteKilogram = this.getDouble("vo2")
+        )
         "Weight" -> WeightRecord(
             time = this.getInstant("time"),
             zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
@@ -309,6 +321,18 @@ internal fun Record.toJSONObject(): JSONObject {
                 obj.put("endTime", this.endTime)
                 obj.put("endZoneOffset", this.endZoneOffset?.toJSONValue())
                 obj.put("count", this.count)
+            }
+            is TotalCaloriesBurnedRecord -> {
+                obj.put("startTime", this.startTime)
+                obj.put("startZoneOffset", this.startZoneOffset?.toJSONValue())
+                obj.put("endTime", this.endTime)
+                obj.put("endZoneOffset", this.endZoneOffset?.toJSONValue())
+                obj.put("energy", this.energy.toJSONObject())
+            }
+            is Vo2MaxRecord -> {
+                obj.put("time", this.time)
+                obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
+                obj.put("vo2MillilitersPerMinuteKilogram", this.vo2MillilitersPerMinuteKilogram)
             }
             is WeightRecord -> {
                 obj.put("time", this.time)

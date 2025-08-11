@@ -239,9 +239,7 @@ Enables basic storage and retrieval of dates and times.
 
 Construct a type with a set of properties K of type T
 
-<code>{
- [P in K]: T;
- }</code>
+<code>{ [P in K]: T; }</code>
 
 
 #### StoredRecord
@@ -261,7 +259,7 @@ Construct a type with a set of properties K of type T
 
 #### RecordType
 
-<code>'ActiveCaloriesBurned' | 'BasalBodyTemperature' | 'BasalMetabolicRate' | 'BloodGlucose' | 'BloodPressure' | 'BodyFat' | 'BodyTemperature' | 'BodyWaterMass' | 'BoneMass' | 'CervicalMucus' | 'CyclingPedalingCadence' | 'Distance' | 'ElevationGained' | 'FloorsClimbed' | 'HeartRateSeries' | 'Height' | 'Hydration' | 'OxygenSaturation' | 'RespiratoryRate' | 'RestingHeartRate' | 'Steps' | 'Weight'</code>
+<code>'ActiveCaloriesBurned' | 'BasalBodyTemperature' | 'BasalMetabolicRate' | 'BloodGlucose' | 'BloodPressure' | 'BodyFat' | 'BodyTemperature' | 'BodyWaterMass' | 'BoneMass' | 'CervicalMucus' | 'CyclingPedalingCadence' | 'Distance' | 'ElevationGained' | 'FloorsClimbed' | 'HeartRateSeries' | 'Height' | 'Hydration' | 'OxygenSaturation' | 'RespiratoryRate' | 'RestingHeartRate' | 'Steps' | 'TotalCaloriesBurned' | 'Vo2Max' | 'Weight'</code>
 
 
 #### TimeRangeFilter

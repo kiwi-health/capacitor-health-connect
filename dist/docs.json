@@ -1064,6 +1064,10 @@
           "complexTypes": []
         },
         {
+          "text": "'CyclingPedalingCadence'",
+          "complexTypes": []
+        },
+        {
           "text": "'Distance'",
           "complexTypes": []
         },
@@ -1101,6 +1105,14 @@
         },
         {
           "text": "'Steps'",
+          "complexTypes": []
+        },
+        {
+          "text": "'TotalCaloriesBurned'",
+          "complexTypes": []
+        },
+        {
+          "text": "'Vo2Max'",
           "complexTypes": []
         },
         {

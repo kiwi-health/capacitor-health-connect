@@ -53,7 +53,7 @@ export interface HealthConnectPlugin {
     openHealthConnectSetting(): Promise<void>;
 }
 export type HealthConnectAvailability = 'Available' | 'NotInstalled' | 'NotSupported';
-export type RecordType = 'ActiveCaloriesBurned' | 'BasalBodyTemperature' | 'BasalMetabolicRate' | 'BloodGlucose' | 'BloodPressure' | 'BodyFat' | 'BodyTemperature' | 'BodyWaterMass' | 'BoneMass' | 'CervicalMucus' | 'Distance' | 'ElevationGained' | 'FloorsClimbed' | 'HeartRateSeries' | 'Height' | 'Hydration' | 'OxygenSaturation' | 'RespiratoryRate' | 'RestingHeartRate' | 'Steps' | 'Weight';
+export type RecordType = 'ActiveCaloriesBurned' | 'BasalBodyTemperature' | 'BasalMetabolicRate' | 'BloodGlucose' | 'BloodPressure' | 'BodyFat' | 'BodyTemperature' | 'BodyWaterMass' | 'BoneMass' | 'CervicalMucus' | 'CyclingPedalingCadence' | 'Distance' | 'ElevationGained' | 'FloorsClimbed' | 'HeartRateSeries' | 'Height' | 'Hydration' | 'OxygenSaturation' | 'RespiratoryRate' | 'RestingHeartRate' | 'Steps' | 'TotalCaloriesBurned' | 'Vo2Max' | 'Weight';
 type RecordBase = {
     metadata: RecordMetadata;
 };
@@ -120,6 +120,13 @@ export type Record = {
     appearance?: number;
     sensation?: number;
 } | {
+    type: 'CyclingPedalingCadence';
+    startTime: Date;
+    startZoneOffset?: string;
+    endTime: Date;
+    endZoneOffset?: string;
+    samples: CyclingPedalingCadenceSample[];
+} | {
     type: 'Distance';
     startTime: Date;
     startZoneOffset?: string;
@@ -182,6 +189,18 @@ export type Record = {
     endZoneOffset?: string;
     count: number;
 } | {
+    type: 'TotalCaloriesBurned';
+    startTime: Date;
+    startZoneOffset?: string;
+    endTime: Date;
+    endZoneOffset?: string;
+    energy: Energy;
+} | {
+    type: 'Vo2Max';
+    time: Date;
+    zoneOffset?: string;
+    vo2MillilitersPerMinuteKilogram: number;
+} | {
     type: 'Weight';
     time: Date;
     zoneOffset?: string;
@@ -217,6 +236,10 @@ export type HeartRateSample = {
     time: Date;
     beatsPerMinute: number;
 };
+export type CyclingPedalingCadenceSample = {
+    time: Date;
+    revolutionsPerMinute: number;
+};
 export type Temperature = {
     unit: 'celsius' | 'fahrenheit';
     value: number;
@@ -229,7 +252,7 @@ export type Volume = {
     value: number;
 };
 export type Power = {
-    unit: 'kilocaloriesPerDay' | 'watts';
+    unit: 'kcal';
     value: number;
 };
 export type Pressure = {

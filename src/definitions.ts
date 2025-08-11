@@ -38,7 +38,7 @@ export interface HealthConnectPlugin {
   openHealthConnectSetting(): Promise<void>;
 }
 export type HealthConnectAvailability = 'Available' | 'NotInstalled' | 'NotSupported';
-export type RecordType = 
+export type RecordType =
   | 'ActiveCaloriesBurned'
   | 'BasalBodyTemperature'
   | 'BasalMetabolicRate'
@@ -73,8 +73,8 @@ export type RecordType =
   // | 'Speed'
   | 'Steps'
   // | 'StepsCadence'
-  // | 'TotalCaloriesBurned'
-  // | 'Vo2Max'
+  | 'TotalCaloriesBurned'
+  | 'Vo2Max'
   | 'Weight';
   // | 'WheelchairPushes'
 type RecordBase = {
@@ -250,6 +250,20 @@ export type Record =
       endTime: Date;
       endZoneOffset?: string;
       count: number;
+    }
+  | {
+      type: 'TotalCaloriesBurned';
+      startTime: Date;
+      startZoneOffset?: string;
+      endTime: Date;
+      endZoneOffset?: string;
+      energy: Energy;
+    }
+  | {
+      type: 'Vo2Max';
+      time: Date;
+      zoneOffset?: string;
+      vo2MillilitersPerMinuteKilogram: number;
     }
   | {
       type: 'Weight';
