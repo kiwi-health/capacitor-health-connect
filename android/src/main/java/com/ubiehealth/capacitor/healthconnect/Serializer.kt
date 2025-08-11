@@ -234,6 +234,27 @@ internal fun Record.toJSONObject(): JSONObject {
                 obj.put("appearance", this.appearance)
                 obj.put("sensation", this.sensation)
             }
+            is DistanceRecord -> {
+                obj.put("startTime", this.startTime)
+                obj.put("startZoneOffset", this.startZoneOffset?.toJSONValue())
+                obj.put("endTime", this.endTime)
+                obj.put("endZoneOffset", this.endZoneOffset?.toJSONValue())
+                obj.put("distance", this.distance.toJSONObject())
+            }
+            is ElevationGainedRecord -> {
+                obj.put("startTime", this.startTime)
+                obj.put("startZoneOffset", this.startZoneOffset?.toJSONValue())
+                obj.put("endTime", this.endTime)
+                obj.put("endZoneOffset", this.endZoneOffset?.toJSONValue())
+                obj.put("elevation", this.elevation.toJSONObject())
+            }
+            is FloorsClimbedRecord -> {
+                obj.put("startTime", this.startTime)
+                obj.put("startZoneOffset", this.startZoneOffset?.toJSONValue())
+                obj.put("endTime", this.endTime)
+                obj.put("endZoneOffset", this.endZoneOffset?.toJSONValue())
+                obj.put("floors", this.floors)
+            }
             is HeartRateRecord -> {
                 obj.put("startTime", this.startTime)
                 obj.put("startZoneOffset", this.startZoneOffset?.toJSONValue())
@@ -245,6 +266,13 @@ internal fun Record.toJSONObject(): JSONObject {
                 obj.put("time", this.time)
                 obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
                 obj.put("height", this.height.toJSONObject())
+            }
+            is HydrationRecord -> {
+               obj.put("startTime", this.startTime)
+               obj.put("startZoneOffset", this.startZoneOffset?.toJSONValue())
+               obj.put("endTime", this.endTime)
+               obj.put("endZoneOffset", this.endZoneOffset?.toJSONValue())
+               obj.put("volume", this.volume.toJSONObject())
             }
             is OxygenSaturationRecord -> {
                 obj.put("time", this.time)
