@@ -49,17 +49,34 @@ export type RecordType =
   | 'BodyWaterMass'
   | 'BoneMass'
   | 'CervicalMucus'
+  // | 'CyclingPedalingCadence'
   | 'Distance'
   | 'ElevationGained'
   | 'FloorsClimbed'
   | 'HeartRateSeries'
   | 'Height'
   | 'Hydration'
+  // | 'IntermenstrualBleeding'
+  // | 'LeanBodyMass'
+  // | 'MenstruationFlow'
+  // | 'MenstruationPeriod'
+  // | 'Nutrition'
+  // | 'OvulationTest'
   | 'OxygenSaturation'
+  // | 'PlannedExerciseSession'
+  // | 'Power'
   | 'RespiratoryRate'
   | 'RestingHeartRate'
+  // | 'SexualActivity'
+  // | 'SleepSession'
+  // | 'SkinTemperature'
+  // | 'Speed'
   | 'Steps'
+  // | 'StepsCadence'
+  // | 'TotalCaloriesBurned'
+  // | 'Vo2Max'
   | 'Weight';
+  // | 'WheelchairPushes'
 type RecordBase = {
   metadata: RecordMetadata;
 };
@@ -259,7 +276,7 @@ export type TimeRangeFilter =
       endTime: Date;
     };
 export type Energy = {
-  unit: 'calories' | 'kilocalories' | 'joules' | 'kilojoules';
+  unit: 'kcal'; // 'calories' | 'kilocalories' | 'joules' | 'kilojoules';
   value: number;
 };
 export type HeartRateSample = {
@@ -282,7 +299,7 @@ export type Power = {
   value: number;
 };
 export type Pressure = {
-  unit: 'millimetersOfMercury';
+  unit: 'mmHg'; // 'millimetersOfMercury';
   value: number;
 };
 export type Length = {

@@ -410,8 +410,8 @@ internal fun JSONObject.getBloodGlucose(name: String): BloodGlucose {
 
 internal fun Energy.toJSONObject(): JSONObject {
     return JSONObject().also { obj ->
-        obj.put("unit", "calories") // TODO: support other units
-        obj.put("value", this.inCalories)
+        obj.put("unit", "kcal") // TODO: support other units
+        obj.put("value", this.inKilocalories)
     }
 }
 
@@ -475,7 +475,7 @@ internal fun JSONObject.getPower(name: String): Power {
 
 internal fun Pressure.toJSONObject(): JSONObject {
     return JSONObject().also { obj ->
-        obj.put("unit", "millimetersOfMercury") // TODO: support other units
+        obj.put("unit", "mmHg") // TODO: support other units
         obj.put("value", this.inMillimetersOfMercury)
     }
 }
