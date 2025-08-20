@@ -156,7 +156,7 @@ export type Record =
       type: 'BodyWaterMass';
       time: Date;
       zoneOffset?: string;
-      mass: Percentage;
+      mass: Mass;
     }
   | {
       type: 'BoneMass';
