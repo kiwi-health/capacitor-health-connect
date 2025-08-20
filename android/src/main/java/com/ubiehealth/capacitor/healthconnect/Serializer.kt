@@ -83,7 +83,7 @@ internal fun JSONObject.toRecord(): Record {
          "BodyWaterMass" -> BodyWaterMassRecord(
             time = this.getInstant("time"),
             zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
-            mass = this.getMass("mass"),
+            mass = this.getPercentage("mass"),
         )
          "BoneMass" -> BoneMassRecord(
             time = this.getInstant("time"),
