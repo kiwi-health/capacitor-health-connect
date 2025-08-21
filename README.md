@@ -259,7 +259,7 @@ Construct a type with a set of properties K of type T
 
 #### RecordType
 
-<code>'ActiveCaloriesBurned' | 'BasalBodyTemperature' | 'BasalMetabolicRate' | 'BloodGlucose' | 'BloodPressure' | 'BodyFat' | 'BodyTemperature' | 'BodyWaterMass' | 'BoneMass' | 'CervicalMucus' | 'CyclingPedalingCadence' | 'Distance' | 'ElevationGained' | 'FloorsClimbed' | 'HeartRateSeries' | 'Height' | 'Hydration' | 'OxygenSaturation' | 'RespiratoryRate' | 'RestingHeartRate' | 'SleepSession' | 'Steps' | 'TotalCaloriesBurned' | 'Vo2Max' | 'Weight'</code>
+<code>'ActiveCaloriesBurned' | 'BasalBodyTemperature' | 'BasalMetabolicRate' | 'BloodGlucose' | 'BloodPressure' | 'BodyFat' | 'BodyTemperature' | 'BodyWaterMass' | 'BoneMass' | 'CervicalMucus' | 'CyclingPedalingCadence' | 'Distance' | 'ElevationGained' | 'ExerciseSession' | 'FloorsClimbed' | 'HeartRateSeries' | 'HeartRateVariabilityRmssd' | 'Height' | 'Hydration' | 'LeanBodyMass' | 'Nutrition' | 'OxygenSaturation' | 'RespiratoryRate' | 'RestingHeartRate' | 'SleepSession' | 'Steps' | 'TotalCaloriesBurned' | 'Vo2Max' | 'Weight'</code>
 
 
 #### TimeRangeFilter

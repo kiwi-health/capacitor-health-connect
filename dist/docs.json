@@ -1076,6 +1076,10 @@
           "complexTypes": []
         },
         {
+          "text": "'ExerciseSession'",
+          "complexTypes": []
+        },
+        {
           "text": "'FloorsClimbed'",
           "complexTypes": []
         },
@@ -1084,11 +1088,23 @@
           "complexTypes": []
         },
         {
+          "text": "'HeartRateVariabilityRmssd'",
+          "complexTypes": []
+        },
+        {
           "text": "'Height'",
           "complexTypes": []
         },
         {
           "text": "'Hydration'",
+          "complexTypes": []
+        },
+        {
+          "text": "'LeanBodyMass'",
+          "complexTypes": []
+        },
+        {
+          "text": "'Nutrition'",
           "complexTypes": []
         },
         {
