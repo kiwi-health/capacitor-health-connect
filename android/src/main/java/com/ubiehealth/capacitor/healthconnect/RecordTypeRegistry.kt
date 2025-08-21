@@ -22,6 +22,7 @@ object RecordTypeRegistry {
         "ExerciseSession" to ExerciseSessionRecord::class,
         "FloorsClimbed" to FloorsClimbedRecord::class,
         "HeartRateSeries" to HeartRateRecord::class,
+        "HeartRateVariabilityRmssd" to HeartRateVariabilityRmssdRecord::class,
         "Height" to HeightRecord::class,
         "Hydration" to HydrationRecord::class,
         "IntermenstrualBleeding" to IntermenstrualBleedingRecord::class,
