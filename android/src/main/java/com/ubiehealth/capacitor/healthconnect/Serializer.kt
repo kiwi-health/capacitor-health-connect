@@ -101,7 +101,7 @@ internal fun JSONObject.toRecord(): Record {
             startZoneOffset =  this.getZoneOffsetOrNull("startZoneOffset"),
             endTime =  this.getInstant("endTime"),
             endZoneOffset =  this.getZoneOffsetOrNull("endZoneOffset"),
-            samples = this.getCyclingPedalingCadenceRecordSamplesList("samples")
+            samples = this.getCyclingPedalingCadenceRecordSamplesList("samples"),
         )
         "Distance" -> DistanceRecord(
             startTime = this.getInstant("startTime"),
@@ -115,21 +115,35 @@ internal fun JSONObject.toRecord(): Record {
             startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
             endTime = this.getInstant("endTime"),
             endZoneOffset = this.getZoneOffsetOrNull("endZoneOffset"),
-            elevation = this.getLength("elevation")
+            elevation = this.getLength("elevation"),
+        )
+        "ExerciseSession" -> ExerciseSessionRecord(
+            startTime = this.getInstant("startTime"),
+            startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
+            endTime = this.getInstant("endTime"),
+            endZoneOffset = this.getZoneOffsetOrNull("endZoneOffset"),
+            title = this.getString("title"),
+            notes = this.getString("notes"),
+            exerciseType = this.getInt("exerciseType"),
         )
         "FloorsClimbed" -> FloorsClimbedRecord(
             startTime = this.getInstant("startTime"),
             startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
             endTime = this.getInstant("endTime"),
             endZoneOffset = this.getZoneOffsetOrNull("endZoneOffset"),
-            floors = this.getDouble("floors")
+            floors = this.getDouble("floors"),
         )
         "HeartRateSeries" -> HeartRateRecord(
             startTime = this.getInstant("startTime"),
             startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
             endTime = this.getInstant("endTime"),
             endZoneOffset = this.getZoneOffsetOrNull("endZoneOffset"),
-            samples = this.getHeartRateRecordSamplesList("samples")
+            samples = this.getHeartRateRecordSamplesList("samples"),
+        )
+        "HeartRateVariabilityRmssd" -> HeartRateVariabilityRmssdRecord(
+            time = this.getInstant("time"),
+            zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
+            heartRateVariabilityMillis = this.getDouble("heartRateVariabilityMillis"),
         )
         "Height" -> HeightRecord(
             time = this.getInstant("time"),
@@ -141,7 +155,62 @@ internal fun JSONObject.toRecord(): Record {
             startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
             endTime = this.getInstant("endTime"),
             endZoneOffset = this.getZoneOffsetOrNull("endZoneOffset"),
-            volume = this.getVolume("volume")
+            volume = this.getVolume("volume"),
+        )
+        "LeanBodyMass" -> LeanBodyMassRecord(
+            time = this.getInstant("time"),
+            zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
+            mass = this.getMass("mass"),
+        )
+        "Nutrition" -> NutritionRecord(
+            startTime = this.getInstant("startTime"),
+            startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
+            endTime = this.getInstant("endTime"),
+            endZoneOffset = this.getZoneOffsetOrNull("endZoneOffset"),
+            name = this.getString("name"),
+            mealType =this.getInt("mealType"),
+            biotin = this.getMass("biotin"),
+            caffeine = this.getMass("caffeine"),
+            calcium = this.getMass("calcium"),
+            energy = this.getEnergy("energy"),
+            energyFromFat = this.getEnergy("energyFromFat"),
+            chloride = this.getMass("chloride"),
+            cholesterol = this.getMass("cholesterol"),
+            chromium = this.getMass("chromium"),
+            copper = this.getMass("copper"),
+            dietaryFiber = this.getMass("dietaryFiber"),
+            folate = this.getMass("folate"),
+            folicAcid = this.getMass("folicAcid"),
+            iodine = this.getMass("iodine"),
+            iron = this.getMass("iron"),
+            magnesium = this.getMass("magnesium"),
+            manganese = this.getMass("manganese"),
+            molybdenum = this.getMass("molybdenum"),
+            monounsaturatedFat = this.getMass("monounsaturatedFat"),
+            niacin = this.getMass("niacin"),
+            pantothenicAcid = this.getMass("pantothenicAcid"),
+            phosphorus = this.getMass("phosphorus"),
+            polyunsaturatedFat = this.getMass("polyunsaturatedFat"),
+            potassium = this.getMass("potassium"),
+            protein = this.getMass("protein"),
+            riboflavin = this.getMass("riboflavin"),
+            saturatedFat = this.getMass("saturatedFat"),
+            selenium = this.getMass("selenium"),
+            sodium = this.getMass("sodium"),
+            sugar = this.getMass("sugar"),
+            thiamin = this.getMass("thiamin"),
+            totalCarbohydrate = this.getMass("totalCarbohydrate"),
+            totalFat = this.getMass("totalFat"),
+            transFat = this.getMass("transFat"),
+            unsaturatedFat = this.getMass("unsaturatedFat"),
+            vitaminA = this.getMass("vitaminA"),
+            vitaminB12 = this.getMass("vitaminB12"),
+            vitaminB6 = this.getMass("vitaminB6"),
+            vitaminC = this.getMass("vitaminC"),
+            vitaminD = this.getMass("vitaminD"),
+            vitaminE = this.getMass("vitaminE"),
+            vitaminK = this.getMass("vitaminK"),
+            zinc = this.getMass("zinc"),
         )
         "OxygenSaturation" -> OxygenSaturationRecord(
             time = this.getInstant("time"),
@@ -179,12 +248,12 @@ internal fun JSONObject.toRecord(): Record {
             startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
             endTime = this.getInstant("endTime"),
             endZoneOffset = this.getZoneOffsetOrNull("endZoneOffset"),
-            energy = this.getEnergy("energy")
+            energy = this.getEnergy("energy"),
         )
         "Vo2Max" -> Vo2MaxRecord(
             time = this.getInstant("time"),
             zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
-            vo2MillilitersPerMinuteKilogram = this.getDouble("vo2")
+            vo2MillilitersPerMinuteKilogram = this.getDouble("vo2"),
         )
         "Weight" -> WeightRecord(
             time = this.getInstant("time"),
@@ -283,6 +352,15 @@ internal fun Record.toJSONObject(): JSONObject {
                 obj.put("endZoneOffset", this.endZoneOffset?.toJSONValue())
                 obj.put("elevation", this.elevation.toJSONObject())
             }
+            is ExerciseSessionRecord -> {
+                obj.put("startTime", this.startTime)
+                obj.put("startZoneOffset", this.startZoneOffset?.toJSONValue())
+                obj.put("endTime", this.endTime)
+                obj.put("endZoneOffset", this.endZoneOffset?.toJSONValue())
+                obj.put("title", this.title)
+                obj.put("notes", this.notes)
+                obj.put("exerciseType", this.exerciseType)
+            }
             is FloorsClimbedRecord -> {
                 obj.put("startTime", this.startTime)
                 obj.put("startZoneOffset", this.startZoneOffset?.toJSONValue())
@@ -297,6 +375,11 @@ internal fun Record.toJSONObject(): JSONObject {
                 obj.put("endZoneOffset", this.endZoneOffset?.toJSONValue())
                 obj.put("samples", this.samples.toHeartRateRecordSamplesJSONArray())
             }
+            is HeartRateVariabilityRmssdRecord -> {
+                obj.put("time", this.time)
+                obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
+                obj.put("heartRateVariabilityMillis", this.heartRateVariabilityMillis)
+            }
             is HeightRecord -> {
                 obj.put("time", this.time)
                 obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
@@ -308,6 +391,61 @@ internal fun Record.toJSONObject(): JSONObject {
                obj.put("endTime", this.endTime)
                obj.put("endZoneOffset", this.endZoneOffset?.toJSONValue())
                obj.put("volume", this.volume.toJSONObject())
+            }
+            is LeanBodyMassRecord -> {
+                obj.put("time", this.time)
+                obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
+                obj.put("mass", this.mass.toJSONObject())
+            }
+            is NutritionRecord -> {
+                obj.put("startTime", this.startTime)
+                obj.put("startZoneOffset", this.startZoneOffset?.toJSONValue())
+                obj.put("endTime", this.endTime)
+                obj.put("endZoneOffset", this.endZoneOffset?.toJSONValue())
+                obj.put("name", this.name)
+                obj.put("mealType", this.mealType)
+                obj.put("biotin", this.biotin?.toJSONObject())
+                obj.put("caffeine", this.caffeine?.toJSONObject())
+                obj.put("calcium", this.calcium?.toJSONObject())
+                obj.put("energy", this.energy?.toJSONObject())
+                obj.put("energyFromFat", this.energyFromFat?.toJSONObject())
+                obj.put("chloride", this.chloride?.toJSONObject())
+                obj.put("cholesterol", this.cholesterol?.toJSONObject())
+                obj.put("chromium", this.chromium?.toJSONObject())
+                obj.put("copper", this.copper?.toJSONObject())
+                obj.put("dietaryFiber", this.dietaryFiber?.toJSONObject())
+                obj.put("folate", this.folate?.toJSONObject())
+                obj.put("folicAcid", this.folicAcid?.toJSONObject())
+                obj.put("iodine", this.iodine?.toJSONObject())
+                obj.put("iron", this.iron?.toJSONObject())
+                obj.put("magnesium", this.magnesium?.toJSONObject())
+                obj.put("manganese", this.manganese?.toJSONObject())
+                obj.put("molybdenum", this.molybdenum?.toJSONObject())
+                obj.put("monounsaturatedFat", this.monounsaturatedFat?.toJSONObject())
+                obj.put("niacin", this.niacin?.toJSONObject())
+                obj.put("pantothenicAcid", this.pantothenicAcid?.toJSONObject())
+                obj.put("phosphorus", this.phosphorus?.toJSONObject())
+                obj.put("polyunsaturatedFat", this.polyunsaturatedFat?.toJSONObject())
+                obj.put("potassium", this.potassium?.toJSONObject())
+                obj.put("protein", this.protein?.toJSONObject())
+                obj.put("riboflavin", this.riboflavin?.toJSONObject())
+                obj.put("saturatedFat", this.saturatedFat?.toJSONObject())
+                obj.put("selenium", this.selenium?.toJSONObject())
+                obj.put("sodium", this.sodium?.toJSONObject())
+                obj.put("sugar", this.sugar?.toJSONObject())
+                obj.put("thiamin", this.thiamin?.toJSONObject())
+                obj.put("totalCarbohydrate", this.totalCarbohydrate?.toJSONObject())
+                obj.put("totalFat", this.totalFat?.toJSONObject())
+                obj.put("transFat", this.transFat?.toJSONObject())
+                obj.put("unsaturatedFat", this.unsaturatedFat?.toJSONObject())
+                obj.put("vitaminA", this.vitaminA?.toJSONObject())
+                obj.put("vitaminB12", this.vitaminB12?.toJSONObject())
+                obj.put("vitaminB6", this.vitaminB6?.toJSONObject())
+                obj.put("vitaminC", this.vitaminC?.toJSONObject())
+                obj.put("vitaminD", this.vitaminD?.toJSONObject())
+                obj.put("vitaminE", this.vitaminE?.toJSONObject())
+                obj.put("vitaminK", this.vitaminK?.toJSONObject())
+                obj.put("zinc", this.zinc?.toJSONObject())
             }
             is OxygenSaturationRecord -> {
                 obj.put("time", this.time)
@@ -598,7 +736,7 @@ internal fun JSONObject.getHeartRateRecordSamplesList(name: String): List<HeartR
     return jsonArray.toList<JSONObject>().map { jsonObj ->
         HeartRateRecord.Sample(
             time = jsonObj.getInstant("time"),
-            beatsPerMinute = jsonObj.getLong("beatsPerMinute")
+            beatsPerMinute = jsonObj.getLong("beatsPerMinute"),
         )
     }
 }
@@ -623,7 +761,7 @@ internal fun JSONObject.getCyclingPedalingCadenceRecordSamplesList(name: String)
     return jsonArray.toList<JSONObject>().map { jsonObj ->
         CyclingPedalingCadenceRecord.Sample(
             time = jsonObj.getInstant("time"),
-            revolutionsPerMinute = jsonObj.getDouble("revolutionsPerMinute")
+            revolutionsPerMinute = jsonObj.getDouble("revolutionsPerMinute"),
         )
     }
 }
@@ -650,7 +788,7 @@ internal fun JSONObject.getSleepSessionRecordStagesList(name: String): List<Slee
         SleepSessionRecord.Stage(
             startTime = jsonObj.getInstant("startTime"),
             endTime = jsonObj.getInstant("endTime"),
-            stage = jsonObj.getInt("stage")
+            stage = jsonObj.getInt("stage"),
         )
     }
 }

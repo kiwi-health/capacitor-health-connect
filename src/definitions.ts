@@ -52,15 +52,17 @@ export type RecordType =
   | 'CyclingPedalingCadence'
   | 'Distance'
   | 'ElevationGained'
+  | 'ExerciseSession'
   | 'FloorsClimbed'
   | 'HeartRateSeries'
+  | 'HeartRateVariabilityRmssd'
   | 'Height'
   | 'Hydration'
   // | 'IntermenstrualBleeding'
-  // | 'LeanBodyMass'
+  | 'LeanBodyMass'
   // | 'MenstruationFlow'
   // | 'MenstruationPeriod'
-  // | 'Nutrition'
+  | 'Nutrition'
   // | 'OvulationTest'
   | 'OxygenSaturation'
   // | 'PlannedExerciseSession'
@@ -196,6 +198,16 @@ export type Record =
       elevation: Length;
     }
   | {
+      type: 'ExerciseSession';
+      startTime: Date;
+      startZoneOffset?: string;
+      endTime: Date;
+      endZoneOffset?: string;
+      title?: string;
+      notes?: string;
+      exerciseType: number;
+    }
+  | {
       type: 'FloorsClimbed';
       startTime: Date;
       startZoneOffset?: string;
@@ -212,6 +224,12 @@ export type Record =
       samples: HeartRateSample[];
     }
   | {
+      type: 'HeartRateVariabilityRmssd';
+      time: Date;
+      zoneOffset?: string;
+      heartRateVariabilityMillis: number;
+    }
+  | {
       type: 'Height';
       time: Date;
       zoneOffset?: string;
@@ -224,6 +242,63 @@ export type Record =
       endTime: Date;
       endZoneOffset?: string;
       volume: Volume;
+    }
+  | {
+      type: 'LeanBodyMass';
+      time: Date;
+      zoneOffset?: string;
+      mass: Mass;
+    }
+  | {
+      type: 'Nutrition';
+      startTime: Date;
+      startZoneOffset?: string;
+      endTime: Date;
+      endZoneOffset?: string;
+      name?: String;
+      mealType?: number;
+      biotin?: Mass;
+      caffeine?: Mass;
+      calcium?: Mass;
+      energy?: Energy;
+      energyFromFat?: Energy;
+      chloride?: Mass;
+      cholesterol?: Mass;
+      chromium?: Mass;
+      copper?: Mass;
+      dietaryFiber?: Mass;
+      folate?: Mass;
+      folicAcid?: Mass;
+      iodine?: Mass;
+      iron?: Mass;
+      magnesium?: Mass;
+      manganese?: Mass;
+      molybdenum?: Mass;
+      monounsaturatedFat?: Mass;
+      niacin?: Mass;
+      pantothenicAcid?: Mass;
+      phosphorus?: Mass;
+      polyunsaturatedFat?: Mass;
+      potassium?: Mass;
+      protein?: Mass;
+      riboflavin?: Mass;
+      saturatedFat?: Mass;
+      selenium?: Mass;
+      sodium?: Mass;
+      sugar?: Mass;
+      thiamin?: Mass;
+      totalCarbohydrate?: Mass;
+      totalFat?: Mass;
+      transFat?: Mass;
+      unsaturatedFat?: Mass;
+      vitaminA?: Mass;
+      vitaminB12?: Mass;
+      vitaminB6?: Mass;
+      vitaminC?: Mass;
+      vitaminD?: Mass;
+      vitaminE?: Mass;
+      vitaminK?: Mass;
+      zinc?: Mass;
     }
   | {
       type: 'OxygenSaturation';
