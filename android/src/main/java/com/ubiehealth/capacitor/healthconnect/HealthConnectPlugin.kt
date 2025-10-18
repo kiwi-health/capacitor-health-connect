@@ -101,20 +101,25 @@ class HealthConnectPlugin : Plugin() {
         this.activity.lifecycleScope.launch {
             val typeName = requireNotNull(call.getString("type"))
             val type = RecordTypeRegistry.requireClass(typeName)
-            val request = ReadRecordsRequest(
+            val allRecords = mutableListOf<Record>()
+            var pageToken: String? = null
+            do {
+                val request = ReadRecordsRequest(
                     recordType = type,
                     timeRangeFilter = call.data.getTimeRangeFilter("timeRangeFilter"),
                     dataOriginFilter = call.data.getDataOriginFilter("dataOriginFilter"),
                     ascendingOrder = call.getBoolean("ascendingOrder") ?: true,
                     pageSize = call.getInt("pageSize") ?: 1000,
-                    pageToken = call.getString("pageToken"),
-            )
-            val result = healthConnectClient.readRecords(request)
+                    pageToken = pageToken,
+                )
+                val result = healthConnectClient.readRecords(request)
+                allRecords += result.records
+                pageToken = result.pageToken
+            } while (pageToken != null)
 
             val res = JSObject().apply {
-                val records = result.records.map { it.toJSONObject() }.toJSONArray()
+                val records = allRecords.map { it.toJSONObject() }.toJSONArray()
                 this.put("records", records)
-                this.put("pageToken", result.pageToken)
             }
             call.resolve(res)
         }
