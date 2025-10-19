@@ -27,9 +27,8 @@ object RecordTypeRegistry {
         "Hydration" to HydrationRecord::class,
         "IntermenstrualBleeding" to IntermenstrualBleedingRecord::class,
         "LeanBodyMass" to LeanBodyMassRecord::class,
-        // "Menstruation" to MenstruationRecord::class,               // falls deine Version Period/Flow trennt, s.u.
-        "MenstruationFlow" to MenstruationFlowRecord::class,       // 1.2.0 alpha: vorhanden
-        "MenstruationPeriod" to MenstruationPeriodRecord::class,   // 1.2.0 alpha: vorhanden
+        "MenstruationFlow" to MenstruationFlowRecord::class,
+        "MenstruationPeriod" to MenstruationPeriodRecord::class,
         "Nutrition" to NutritionRecord::class,
         "OvulationTest" to OvulationTestRecord::class,
         "OxygenSaturation" to OxygenSaturationRecord::class,

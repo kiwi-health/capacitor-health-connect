@@ -495,9 +495,9 @@ internal fun Record.toJSONObject(): JSONObject {
                 obj.put("zinc", this.zinc?.toJSONObject())
             }
             is OvulationTest -> {
-                obj.put("time", this.time)
-                obj.put("zoneOffset", this.zoneOffset?.toJSONValue()
-                obj.put("result", this.result)
+                obj.put("time", this.time))
+                obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
+                obj.put("result", this.result))
             }
             is OxygenSaturationRecord -> {
                 obj.put("time", this.time)

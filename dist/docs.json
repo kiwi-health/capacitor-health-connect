@@ -1100,11 +1100,27 @@
           "complexTypes": []
         },
         {
+          "text": "'IntermenstrualBleeding'",
+          "complexTypes": []
+        },
+        {
           "text": "'LeanBodyMass'",
           "complexTypes": []
         },
         {
+          "text": "'MenstruationFlow'",
+          "complexTypes": []
+        },
+        {
+          "text": "'MenstruationPeriod'",
+          "complexTypes": []
+        },
+        {
           "text": "'Nutrition'",
+          "complexTypes": []
+        },
+        {
+          "text": "'OvulationTest'",
           "complexTypes": []
         },
         {
@@ -1117,6 +1133,10 @@
         },
         {
           "text": "'RestingHeartRate'",
+          "complexTypes": []
+        },
+        {
+          "text": "'SexualActivity'",
           "complexTypes": []
         },
         {
@@ -1137,6 +1157,10 @@
         },
         {
           "text": "'Weight'",
+          "complexTypes": []
+        },
+        {
+          "text": "'WheelchairPushes'",
           "complexTypes": []
         }
       ]

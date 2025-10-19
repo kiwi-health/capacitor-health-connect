@@ -1,6 +1,6 @@
 {
   "name": "@kiwi-health/capacitor-health-connect",
-  "version": "0.0.37",
+  "version": "0.0.38",
   "description": "Android Health Connect integration for Capacitor",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

@@ -53,7 +53,7 @@ export interface HealthConnectPlugin {
     openHealthConnectSetting(): Promise<void>;
 }
 export type HealthConnectAvailability = 'Available' | 'NotInstalled' | 'NotSupported';
-export type RecordType = 'ActiveCaloriesBurned' | 'BasalBodyTemperature' | 'BasalMetabolicRate' | 'BloodGlucose' | 'BloodPressure' | 'BodyFat' | 'BodyTemperature' | 'BodyWaterMass' | 'BoneMass' | 'CervicalMucus' | 'CyclingPedalingCadence' | 'Distance' | 'ElevationGained' | 'ExerciseSession' | 'FloorsClimbed' | 'HeartRateSeries' | 'HeartRateVariabilityRmssd' | 'Height' | 'Hydration' | 'LeanBodyMass' | 'Nutrition' | 'OxygenSaturation' | 'RespiratoryRate' | 'RestingHeartRate' | 'SleepSession' | 'Steps' | 'TotalCaloriesBurned' | 'Vo2Max' | 'Weight';
+export type RecordType = 'ActiveCaloriesBurned' | 'BasalBodyTemperature' | 'BasalMetabolicRate' | 'BloodGlucose' | 'BloodPressure' | 'BodyFat' | 'BodyTemperature' | 'BodyWaterMass' | 'BoneMass' | 'CervicalMucus' | 'CyclingPedalingCadence' | 'Distance' | 'ElevationGained' | 'ExerciseSession' | 'FloorsClimbed' | 'HeartRateSeries' | 'HeartRateVariabilityRmssd' | 'Height' | 'Hydration' | 'IntermenstrualBleeding' | 'LeanBodyMass' | 'MenstruationFlow' | 'MenstruationPeriod' | 'Nutrition' | 'OvulationTest' | 'OxygenSaturation' | 'RespiratoryRate' | 'RestingHeartRate' | 'SexualActivity' | 'SleepSession' | 'Steps' | 'TotalCaloriesBurned' | 'Vo2Max' | 'Weight' | 'WheelchairPushes';
 type RecordBase = {
     metadata: RecordMetadata;
 };
@@ -181,10 +181,25 @@ export type Record = {
     endZoneOffset?: string;
     volume: Volume;
 } | {
+    type: 'IntermenstrualBleeding';
+    time: Date;
+    zoneOffset?: string;
+} | {
     type: 'LeanBodyMass';
     time: Date;
     zoneOffset?: string;
     mass: Mass;
+} | {
+    type: 'MenstruationFlow';
+    time: Date;
+    zoneOffset?: string;
+    flow: number;
+} | {
+    type: 'MenstruationPeriod';
+    startTime: Date;
+    startZoneOffset?: string;
+    endTime: Date;
+    endZoneOffset?: string;
 } | {
     type: 'Nutrition';
     startTime: Date;
@@ -236,6 +251,11 @@ export type Record = {
     vitaminK?: Mass;
     zinc?: Mass;
 } | {
+    type: 'OvulationTest';
+    time: Date;
+    zoneOffset?: string;
+    result: number;
+} | {
     type: 'OxygenSaturation';
     time: Date;
     zoneOffset?: string;
@@ -250,6 +270,11 @@ export type Record = {
     time: Date;
     zoneOffset?: string;
     beatsPerMinute: number;
+} | {
+    type: 'SexualActivity';
+    time: Date;
+    zoneOffset?: string;
+    protectionUsed: number;
 } | {
     type: 'SleepSession';
     startTime: Date;
@@ -283,6 +308,13 @@ export type Record = {
     time: Date;
     zoneOffset?: string;
     weight: Mass;
+} | {
+    type: 'WheelchairPushes';
+    startTime: Date;
+    startZoneOffset?: string;
+    endTime: Date;
+    endZoneOffset?: string;
+    count: number;
 };
 export type RecordMetadata = {
     id: string;
