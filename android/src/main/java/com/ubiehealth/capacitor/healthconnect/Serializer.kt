@@ -169,7 +169,7 @@ internal fun JSONObject.toRecord(): Record {
         "MenstruationFlow" -> MenstruationFlowRecord(
             time = this.getInstant("time"),
             zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
-            flow = this.getLong("flow"),
+            flow = this.getInt("flow"),
         )
         "MenstruationPeriod" -> MenstruationPeriodRecord(
             startTime = this.getInstant("startTime"),
@@ -227,10 +227,10 @@ internal fun JSONObject.toRecord(): Record {
             vitaminK = this.getMass("vitaminK"),
             zinc = this.getMass("zinc"),
         )
-        "OvulationTest" -> OvulationTest(
+        "OvulationTest" -> OvulationTestRecord(
             time = this.getInstant("time"),
             zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
-            result = this.getLong("result"),
+            result = this.getInt("result"),
         )
         "OxygenSaturation" -> OxygenSaturationRecord(
             time = this.getInstant("time"),
@@ -250,7 +250,7 @@ internal fun JSONObject.toRecord(): Record {
         "SexualActivity" -> SexualActivityRecord(
             time = this.getInstant("time"),
             zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
-            protectionUsed = this.getLong("protectionUsed"),
+            protectionUsed = this.getInt("protectionUsed"),
         )
         "SleepSession" -> SleepSessionRecord(
             startTime = this.getInstant("startTime"),
@@ -494,10 +494,10 @@ internal fun Record.toJSONObject(): JSONObject {
                 obj.put("vitaminK", this.vitaminK?.toJSONObject())
                 obj.put("zinc", this.zinc?.toJSONObject())
             }
-            is OvulationTest -> {
-                obj.put("time", this.time))
+            is OvulationTestRecord -> {
+                obj.put("time", this.time)
                 obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
-                obj.put("result", this.result))
+                obj.put("result", this.result)
             }
             is OxygenSaturationRecord -> {
                 obj.put("time", this.time)
