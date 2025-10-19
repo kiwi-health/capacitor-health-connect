@@ -58,18 +58,18 @@ export type RecordType =
   | 'HeartRateVariabilityRmssd'
   | 'Height'
   | 'Hydration'
-  // | 'IntermenstrualBleeding'
+  | 'IntermenstrualBleeding'
   | 'LeanBodyMass'
-  // | 'MenstruationFlow'
-  // | 'MenstruationPeriod'
+  | 'MenstruationFlow'
+  | 'MenstruationPeriod'
   | 'Nutrition'
-  // | 'OvulationTest'
+  | 'OvulationTest'
   | 'OxygenSaturation'
   // | 'PlannedExerciseSession'
   // | 'Power'
   | 'RespiratoryRate'
   | 'RestingHeartRate'
-  // | 'SexualActivity'
+  | 'SexualActivity'
   | 'SleepSession'
   // | 'SkinTemperature'
   // | 'Speed'
@@ -77,8 +77,8 @@ export type RecordType =
   // | 'StepsCadence'
   | 'TotalCaloriesBurned'
   | 'Vo2Max'
-  | 'Weight';
-  // | 'WheelchairPushes'
+  | 'Weight'
+  | 'WheelchairPushes';
 type RecordBase = {
   metadata: RecordMetadata;
 };
@@ -244,10 +244,28 @@ export type Record =
       volume: Volume;
     }
   | {
+      type: 'IntermenstrualBleeding';
+      time: Date;
+      zoneOffset?: string;
+    }
+  | {
       type: 'LeanBodyMass';
       time: Date;
       zoneOffset?: string;
       mass: Mass;
+    }
+  | {
+      type: 'MenstruationFlow';
+      time: Date;
+      zoneOffset?: string;
+      flow: number;
+    }
+  | {
+      type: 'MenstruationPeriod';
+      startTime: Date;
+      startZoneOffset?: string;
+      endTime: Date;
+      endZoneOffset?: string;
     }
   | {
       type: 'Nutrition';
@@ -301,6 +319,12 @@ export type Record =
       zinc?: Mass;
     }
   | {
+      type: 'OvulationTest';
+      time: Date;
+      zoneOffset?: string;
+      result: number;
+    }
+  | {
       type: 'OxygenSaturation';
       time: Date;
       zoneOffset?: string;
@@ -317,6 +341,12 @@ export type Record =
       time: Date;
       zoneOffset?: string;
       beatsPerMinute: number;
+    }
+    | {
+      type: 'SexualActivity';
+      time: Date;
+      zoneOffset?: string;
+      protectionUsed: number;
     }
   | {
       type: 'SleepSession';
@@ -355,6 +385,14 @@ export type Record =
       time: Date;
       zoneOffset?: string;
       weight: Mass;
+    }
+  | {
+      type: 'WheelchairPushes';
+      startTime: Date;
+      startZoneOffset?: string;
+      endTime: Date;
+      endZoneOffset?: string;
+      count: number;
     };
 export type RecordMetadata = {
   id: string;

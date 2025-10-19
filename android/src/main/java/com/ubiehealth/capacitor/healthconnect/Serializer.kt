@@ -157,10 +157,25 @@ internal fun JSONObject.toRecord(): Record {
             endZoneOffset = this.getZoneOffsetOrNull("endZoneOffset"),
             volume = this.getVolume("volume"),
         )
+        "IntermenstrualBleeding" -> IntermenstrualBleedingRecord(
+            time = this.getInstant("time"),
+            zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
+        )
         "LeanBodyMass" -> LeanBodyMassRecord(
             time = this.getInstant("time"),
             zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
             mass = this.getMass("mass"),
+        )
+        "MenstruationFlow" -> MenstruationFlowRecord(
+            time = this.getInstant("time"),
+            zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
+            flow = this.getLong("flow"),
+        )
+        "MenstruationPeriod" -> MenstruationPeriodRecord(
+            startTime = this.getInstant("startTime"),
+            startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
+            endTime = this.getInstant("endTime"),
+            endZoneOffset = this.getZoneOffsetOrNull("endZoneOffset"),
         )
         "Nutrition" -> NutritionRecord(
             startTime = this.getInstant("startTime"),
@@ -212,6 +227,11 @@ internal fun JSONObject.toRecord(): Record {
             vitaminK = this.getMass("vitaminK"),
             zinc = this.getMass("zinc"),
         )
+        "OvulationTest" -> OvulationTest(
+            time = this.getInstant("time"),
+            zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
+            result = this.getLong("result"),
+        )
         "OxygenSaturation" -> OxygenSaturationRecord(
             time = this.getInstant("time"),
             zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
@@ -226,6 +246,11 @@ internal fun JSONObject.toRecord(): Record {
             time = this.getInstant("time"),
             zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
             beatsPerMinute = this.getLong("beatsPerMinute"),
+        )
+        "SexualActivity" -> SexualActivityRecord(
+            time = this.getInstant("time"),
+            zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
+            protectionUsed = this.getLong("protectionUsed"),
         )
         "SleepSession" -> SleepSessionRecord(
             startTime = this.getInstant("startTime"),
@@ -259,6 +284,13 @@ internal fun JSONObject.toRecord(): Record {
             time = this.getInstant("time"),
             zoneOffset = this.getZoneOffsetOrNull("zoneOffset"),
             weight = this.getMass("weight"),
+        )
+        "WheelchairPushes" -> WheelchairPushesRecord(
+            startTime = this.getInstant("startTime"),
+            startZoneOffset = this.getZoneOffsetOrNull("startZoneOffset"),
+            endTime = this.getInstant("endTime"),
+            endZoneOffset = this.getZoneOffsetOrNull("endZoneOffset"),
+            count = this.getLong("count"),
         )
         else -> throw IllegalArgumentException("Unexpected record type: $type")
     }
@@ -392,10 +424,25 @@ internal fun Record.toJSONObject(): JSONObject {
                obj.put("endZoneOffset", this.endZoneOffset?.toJSONValue())
                obj.put("volume", this.volume.toJSONObject())
             }
+            is IntermenstrualBleedingRecord -> {
+                obj.put("time", this.time)
+                obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
+            }
             is LeanBodyMassRecord -> {
                 obj.put("time", this.time)
                 obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
                 obj.put("mass", this.mass.toJSONObject())
+            }
+            is MenstruationFlowRecord -> {
+                obj.put("time", this.time)
+                obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
+                obj.put("flow", this.flow)
+            }
+            is MenstruationPeriodRecord -> {
+                obj.put("startTime", this.startTime)
+                obj.put("startZoneOffset", this.startZoneOffset?.toJSONValue())
+                obj.put("endTime", this.endTime)
+                obj.put("endZoneOffset", this.endZoneOffset?.toJSONValue())
             }
             is NutritionRecord -> {
                 obj.put("startTime", this.startTime)
@@ -447,6 +494,11 @@ internal fun Record.toJSONObject(): JSONObject {
                 obj.put("vitaminK", this.vitaminK?.toJSONObject())
                 obj.put("zinc", this.zinc?.toJSONObject())
             }
+            is OvulationTest -> {
+                obj.put("time", this.time)
+                obj.put("zoneOffset", this.zoneOffset?.toJSONValue()
+                obj.put("result", this.result)
+            }
             is OxygenSaturationRecord -> {
                 obj.put("time", this.time)
                 obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
@@ -461,6 +513,11 @@ internal fun Record.toJSONObject(): JSONObject {
                 obj.put("time", this.time)
                 obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
                 obj.put("beatsPerMinute", this.beatsPerMinute)
+            }
+            is SexualActivityRecord -> {
+                obj.put("time", this.time)
+                obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
+                obj.put("protectionUsed", this.protectionUsed)
             }
             is SleepSessionRecord -> {
                 obj.put("startTime", this.startTime)
@@ -494,6 +551,13 @@ internal fun Record.toJSONObject(): JSONObject {
                 obj.put("time", this.time)
                 obj.put("zoneOffset", this.zoneOffset?.toJSONValue())
                 obj.put("weight", this.weight.toJSONObject())
+            }
+            is WheelchairPushesRecord -> {
+                obj.put("startTime", this.startTime)
+                obj.put("startZoneOffset", this.startZoneOffset?.toJSONValue())
+                obj.put("endTime", this.endTime)
+                obj.put("endZoneOffset", this.endZoneOffset?.toJSONValue())
+                obj.put("count", this.count)
             }
             else -> throw IllegalArgumentException("Unexpected record class: $${this::class.qualifiedName}")
         }
